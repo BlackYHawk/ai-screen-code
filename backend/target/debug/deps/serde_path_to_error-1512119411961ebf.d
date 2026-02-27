@@ -1,0 +1,9 @@
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/serde_path_to_error-1512119411961ebf.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/de.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/path.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/ser.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/wrap.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libserde_path_to_error-1512119411961ebf.rmeta: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/de.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/path.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/ser.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/wrap.rs
+
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/lib.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/de.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/path.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/ser.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/serde_path_to_error-0.1.20/src/wrap.rs:

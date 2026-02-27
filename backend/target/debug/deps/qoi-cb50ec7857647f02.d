@@ -1,0 +1,13 @@
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/qoi-cb50ec7857647f02.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/decode.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/encode.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/error.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/header.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/pixel.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/types.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/utils.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/consts.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libqoi-cb50ec7857647f02.rmeta: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/decode.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/encode.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/error.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/header.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/pixel.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/types.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/utils.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/consts.rs
+
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/lib.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/decode.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/encode.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/error.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/header.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/pixel.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/types.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/utils.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/qoi-0.4.1/src/consts.rs:

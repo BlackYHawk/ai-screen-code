@@ -1,0 +1,9 @@
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/convert_case-2567190ee175b331.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/case.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/converter.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/pattern.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/segmentation.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libconvert_case-2567190ee175b331.rmeta: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/case.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/converter.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/pattern.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/segmentation.rs
+
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/lib.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/case.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/converter.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/pattern.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/convert_case-0.6.0/src/segmentation.rs:

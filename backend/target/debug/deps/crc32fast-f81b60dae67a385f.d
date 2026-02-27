@@ -1,0 +1,10 @@
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/crc32fast-f81b60dae67a385f.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/baseline.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/combine.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/specialized/mod.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/table.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/specialized/aarch64.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libcrc32fast-f81b60dae67a385f.rmeta: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/baseline.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/combine.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/specialized/mod.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/table.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/specialized/aarch64.rs
+
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/lib.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/baseline.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/combine.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/specialized/mod.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/table.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/crc32fast-1.5.0/src/specialized/aarch64.rs:

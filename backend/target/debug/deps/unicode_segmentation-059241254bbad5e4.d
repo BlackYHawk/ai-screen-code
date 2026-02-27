@@ -1,0 +1,9 @@
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/unicode_segmentation-059241254bbad5e4.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/grapheme.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/sentence.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/word.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/tables.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libunicode_segmentation-059241254bbad5e4.rmeta: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/grapheme.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/sentence.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/word.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/tables.rs
+
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/lib.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/grapheme.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/sentence.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/word.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/unicode-segmentation-1.12.0/src/tables.rs:

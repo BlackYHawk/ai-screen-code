@@ -1,0 +1,11 @@
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/yaml_rust2-4de6dc9324b876c4.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/char_traits.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/debug.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/emitter.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/parser.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/scanner.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/yaml.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libyaml_rust2-4de6dc9324b876c4.rmeta: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/char_traits.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/debug.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/emitter.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/parser.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/scanner.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/yaml.rs
+
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/lib.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/char_traits.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/debug.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/emitter.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/parser.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/scanner.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/yaml-rust2-0.8.1/src/yaml.rs:

@@ -1,0 +1,11 @@
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/toml_write-cd52ada637627e7e.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/key.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/string.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/value.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/write.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libtoml_write-cd52ada637627e7e.rlib: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/key.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/string.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/value.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/write.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libtoml_write-cd52ada637627e7e.rmeta: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/key.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/string.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/value.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/write.rs
+
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/lib.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/key.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/string.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/value.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/toml_write-0.1.2/src/write.rs:

@@ -1,0 +1,10 @@
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/writeable-94ca70021babc47a.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/cmp.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/impls.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/ops.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/parts_write_adapter.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/try_writeable.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libwriteable-94ca70021babc47a.rmeta: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/cmp.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/impls.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/ops.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/parts_write_adapter.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/try_writeable.rs
+
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/lib.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/cmp.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/impls.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/ops.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/parts_write_adapter.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/writeable-0.6.2/src/try_writeable.rs:

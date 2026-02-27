@@ -1,0 +1,10 @@
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/version_check-4700aee8127e1ffa.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/version.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/channel.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/date.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libversion_check-4700aee8127e1ffa.rlib: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/version.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/channel.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/date.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libversion_check-4700aee8127e1ffa.rmeta: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/version.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/channel.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/date.rs
+
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/lib.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/version.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/channel.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/version_check-0.9.5/src/date.rs:

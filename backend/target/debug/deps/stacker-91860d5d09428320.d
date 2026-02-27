@@ -1,0 +1,10 @@
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/stacker-91860d5d09428320.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/backends/mod.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/backends/macos.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/mmap_stack_restore_guard.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libstacker-91860d5d09428320.rlib: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/backends/mod.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/backends/macos.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/mmap_stack_restore_guard.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libstacker-91860d5d09428320.rmeta: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/backends/mod.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/backends/macos.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/mmap_stack_restore_guard.rs
+
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/lib.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/backends/mod.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/backends/macos.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/stacker-0.1.23/src/mmap_stack_restore_guard.rs:

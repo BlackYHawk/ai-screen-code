@@ -1,0 +1,10 @@
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/zerovec_derive-a9b64a42c1df482f.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/make_ule.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/make_varule.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/ule.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/utils.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/varule.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libzerovec_derive-a9b64a42c1df482f.dylib: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/make_ule.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/make_varule.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/ule.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/utils.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/varule.rs
+
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/lib.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/make_ule.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/make_varule.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/ule.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/utils.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/zerovec-derive-0.11.2/src/varule.rs:

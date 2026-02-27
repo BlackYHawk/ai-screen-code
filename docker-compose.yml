@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # Backend API service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ai-screen-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # JWT Configuration
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-in-production}
+      - JWT_EXPIRATION_DAYS=7
+
+      # Server Configuration
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8080
+
+      # OAuth Configuration
+      - QQ_CLIENT_ID=${QQ_CLIENT_ID:-}
+      - QQ_CLIENT_SECRET=${QQ_CLIENT_SECRET:-}
+      - QQ_REDIRECT_URI=${QQ_REDIRECT_URI:-https://your-domain.com/auth/callback/qq}
+
+      - WECHAT_CLIENT_ID=${WECHAT_CLIENT_ID:-}
+      - WECHAT_CLIENT_SECRET=${WECHAT_CLIENT_SECRET:-}
+      - WECHAT_REDIRECT_URI=${WECHAT_REDIRECT_URI:-https://your-domain.com/auth/callback/wechat}
+
+      - DOUYIN_CLIENT_ID=${DOUYIN_CLIENT_ID:-}
+      - DOUYIN_CLIENT_SECRET=${DOUYIN_CLIENT_SECRET:-}
+      - DOUYIN_REDIRECT_URI=${DOUYIN_REDIRECT_URI:-https://your-domain.com/auth/callback/douyin}
+
+      # Database (if using external database)
+      - DATABASE_URL=${DATABASE_URL:-}
+
+      # Email Configuration
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USERNAME=${SMTP_USERNAME:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_FROM=${SMTP_FROM:-noreply@your-domain.com}
+
+      # AI Model API Keys
+      - QWEN_API_KEY=${QWEN_API_KEY:-}
+      - MINIMAX_API_KEY=${MINIMAX_API_KEY:-}
+      - KIMI_API_KEY=${KIMI_API_KEY:-}
+      - GLM_API_KEY=${GLM_API_KEY:-}
+
+    networks:
+      - ai-screen-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ai-screen-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"  # For HTTPS (need to configure SSL certificate)
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - ai-screen-network
+    environment:
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL:-/api}
+
+  # Optional: Nginx reverse proxy (recommended for production)
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: ai-screen-nginx
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./nginx/ssl:/etc/nginx/ssl:ro
+  #   depends_on:
+  #     - backend
+  #     - frontend
+  #   networks:
+  #     - ai-screen-network
+
+networks:
+  ai-screen-network:
+    driver: bridge

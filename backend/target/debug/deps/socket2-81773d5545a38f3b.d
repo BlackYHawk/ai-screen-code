@@ -1,0 +1,11 @@
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/socket2-81773d5545a38f3b.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/sockaddr.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/socket.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/sockref.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/sys/unix.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libsocket2-81773d5545a38f3b.rlib: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/sockaddr.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/socket.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/sockref.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/sys/unix.rs
+
+/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libsocket2-81773d5545a38f3b.rmeta: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/sockaddr.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/socket.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/sockref.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/sys/unix.rs
+
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/lib.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/sockaddr.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/socket.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/sockref.rs:
+/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/socket2-0.6.2/src/sys/unix.rs:
