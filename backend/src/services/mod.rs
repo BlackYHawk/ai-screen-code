@@ -1,0 +1,23 @@
+pub mod ai_service;
+pub mod douyin_oauth;
+pub mod email_service;
+pub mod glm_service;
+pub mod history_service;
+pub mod kimi_service;
+pub mod minimax_service;
+pub mod oauth;
+pub mod qq_oauth;
+pub mod qwen_service;
+pub mod wechat_oauth;
+
+pub use ai_service::AiService;
+pub use douyin_oauth::DouyinOAuthService;
+pub use email_service::EmailService;
+pub use glm_service::GlmService;
+pub use history_service::HistoryService;
+pub use kimi_service::KimiService;
+pub use minimax_service::MiniMaxService;
+pub use oauth::{OAuthServiceFactory, OAuthUserInfo};
+pub use qq_oauth::QqOAuthService;
+pub use qwen_service::QwenService;
+pub use wechat_oauth::WechatOAuthService;
