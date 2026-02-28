@@ -1,9 +1,0 @@
-/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/futures_macro-3644d08b1a9e9119.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/executor.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/join.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/select.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/stream_select.rs
-
-/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libfutures_macro-3644d08b1a9e9119.dylib: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/lib.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/executor.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/join.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/select.rs /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/stream_select.rs
-
-/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/lib.rs:
-/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/executor.rs:
-/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/join.rs:
-/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/select.rs:
-/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/futures-macro-0.3.32/src/stream_select.rs:

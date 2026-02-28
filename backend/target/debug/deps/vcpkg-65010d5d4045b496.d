@@ -1,7 +1,0 @@
-/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/vcpkg-65010d5d4045b496.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/vcpkg-0.2.15/src/lib.rs
-
-/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libvcpkg-65010d5d4045b496.rlib: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/vcpkg-0.2.15/src/lib.rs
-
-/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libvcpkg-65010d5d4045b496.rmeta: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/vcpkg-0.2.15/src/lib.rs
-
-/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/vcpkg-0.2.15/src/lib.rs:

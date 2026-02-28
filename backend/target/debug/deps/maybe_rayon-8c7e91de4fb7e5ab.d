@@ -1,5 +1,0 @@
-/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/maybe_rayon-8c7e91de4fb7e5ab.d: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/maybe-rayon-0.1.1/src/lib.rs
-
-/Users/heyong/RustroverProjects/ai_screen_code/backend/target/debug/deps/libmaybe_rayon-8c7e91de4fb7e5ab.rmeta: /Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/maybe-rayon-0.1.1/src/lib.rs
-
-/Users/heyong/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/maybe-rayon-0.1.1/src/lib.rs:
