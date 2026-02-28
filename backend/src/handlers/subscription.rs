@@ -22,11 +22,14 @@ pub async fn create_order_handler(
     State(state): State<AppState>,
     Json(req): Json<CreateOrderRequest>,
 ) -> Result<Json<CreateOrderResponse>, String> {
+    // 验证请求参数
+    req.validate().map_err(|e| e.to_string())?;
+
     // 验证套餐
     let plans = SubscriptionPlan::get_plans();
     let plan = plans
         .iter()
-        .find(|p| p.name == req.plan)
+        .find(|p| p.id == req.plan)
         .ok_or_else(|| "Invalid plan".to_string())?;
 
     // 验证支付方式
@@ -35,8 +38,8 @@ pub async fn create_order_handler(
     // 生成订单ID
     let order_id = Uuid::new_v4().to_string();
 
-    // 使用临时用户ID（未登录用户）
-    let user_id = "guest".to_string();
+    // 使用临时用户ID（生产环境应从认证获取）
+    let user_id = "demo_user".to_string();
 
     // 创建订单
     let order = Order {
@@ -90,12 +93,34 @@ pub async fn payment_callback_handler(
     State(state): State<AppState>,
     Json(req): Json<PaymentCallbackRequest>,
 ) -> Result<Json<serde_json::Value>, String> {
+    // 验证请求
+    req.validate().map_err(|e| e.to_string())?;
+
     // 查找订单
     let order = state
         .db
         .find_order_by_id(&req.order_id)
         .map_err(|e| format!("Failed to find order: {}", e))?
         .ok_or_else(|| "Order not found".to_string())?;
+
+    // 幂等性检查：订单已支付则直接返回成功
+    if order.status == OrderStatus::Paid {
+        tracing::info!("Order already paid, skipping duplicate callback: {}", req.order_id);
+        return Ok(Json(serde_json::json!({
+            "success": true,
+            "message": "Order already processed"
+        })));
+    }
+
+    // 验证订单状态为 pending
+    if order.status != OrderStatus::Pending {
+        return Err(format!("Invalid order status: {}", order.status));
+    }
+
+    // 验证支付状态
+    if req.status != "paid" {
+        return Err("Payment not successful".to_string());
+    }
 
     // 更新订单状态为已支付
     state
@@ -120,7 +145,7 @@ pub async fn payment_callback_handler(
 
     // 检查用户是否已有订阅
     if let Ok(Some(existing_sub)) = state.db.get_active_subscription(&order.user_id) {
-        // 更新现有订阅
+        // 更新现有订阅为过期
         state
             .db
             .update_subscription_status(&existing_sub.id, SubscriptionStatus::Expired)

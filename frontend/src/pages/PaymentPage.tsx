@@ -1,8 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { CheckCircle, XCircle, Loader2, RefreshCw } from 'lucide-react'
+import { CheckCircle, XCircle, Loader2, RefreshCw, AlertTriangle } from 'lucide-react'
 import { getOrderStatus, paymentCallback } from '@/api/client'
 import type { CreateOrderResponse } from '@/types/api'
+
+const MAX_POLL_COUNT = 60 // 最多轮询 3 分钟 (60 * 3s)
+const POLL_INTERVAL = 3000 // 3 秒轮询一次
+
+const paymentMethodNames: Record<string, string> = {
+  alipay: '支付宝',
+  wechat: '微信支付',
+  yunshanfu: '云闪付',
+}
+
+const planNameMap: Record<string, string> = {
+  lite: '基础版',
+  pro: '专业版',
+  max: '旗舰版',
+}
 
 export function PaymentPage() {
   const { orderId } = useParams<{ orderId: string }>()
@@ -11,41 +26,92 @@ export function PaymentPage() {
   const [loading, setLoading] = useState(true)
   const [polling, setPolling] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [pollCount, setPollCount] = useState(0)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
+  const loadOrder = useCallback(async () => {
+    if (!orderId) return
+
+    try {
+      const data = await getOrderStatus(orderId)
+      setOrder(data)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '加载订单失败'
+      setError(message)
+      // 重试一次
+      try {
+        const data = await getOrderStatus(orderId)
+        setOrder(data)
+        setError(null)
+      } catch {
+        // 保留原始错误
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [orderId])
+
+  const checkOrderStatus = useCallback(async () => {
+    if (!orderId) return
+
+    try {
+      const data = await getOrderStatus(orderId)
+      setOrder(data)
+
+      // 如果订单已支付，停止轮询
+      if (data.status === 'paid') {
+        setPolling(false)
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
+        }
+      }
+    } catch (err) {
+      // 静默处理轮询错误，避免频繁提示
+      console.error('Failed to check order status:', err)
+      // 轮询失败时不设置error，避免干扰用户
+    }
+  }, [orderId])
+
+  // 初始加载
   useEffect(() => {
     if (orderId) {
       loadOrder()
     }
-  }, [orderId])
+  }, [orderId, loadOrder])
 
+  // 轮询订单状态
   useEffect(() => {
-    if (order?.status === 'pending') {
-      const interval = setInterval(() => {
-        checkOrderStatus()
-      }, 3000)
-      return () => clearInterval(interval)
-    }
-  }, [order?.status])
+    if (order?.status === 'pending' && pollCount < MAX_POLL_COUNT && !polling) {
+      intervalRef.current = setInterval(() => {
+        setPollCount((prev) => {
+          if (prev >= MAX_POLL_COUNT) {
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current)
+            }
+            return prev
+          }
+          checkOrderStatus()
+          return prev + 1
+        })
+      }, POLL_INTERVAL)
 
-  const loadOrder = async () => {
-    try {
-      const data = await getOrderStatus(orderId!)
-      setOrder(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '加载订单失败')
-    } finally {
-      setLoading(false)
+      return () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+        }
+      }
     }
-  }
+  }, [order?.status, pollCount, polling, checkOrderStatus])
 
-  const checkOrderStatus = async () => {
-    try {
-      const data = await getOrderStatus(orderId!)
-      setOrder(data)
-    } catch (err) {
-      console.error('Failed to check order status:', err)
+  // 清理函数
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
     }
-  }
+  }, [])
 
   const handleSimulatePayment = async () => {
     if (!orderId) return
@@ -59,11 +125,14 @@ export function PaymentPage() {
       })
       await checkOrderStatus()
     } catch (err) {
-      setError(err instanceof Error ? err.message : '支付失败')
+      const message = err instanceof Error ? err.message : '支付失败'
+      setError(message)
     } finally {
       setPolling(false)
     }
   }
+
+  const isPollingTimeout = pollCount >= MAX_POLL_COUNT
 
   if (loading) {
     return (
@@ -73,7 +142,7 @@ export function PaymentPage() {
     )
   }
 
-  if (error) {
+  if (error && !order) {
     return (
       <div className="max-w-md mx-auto px-4 py-12">
         <div className="text-center">
@@ -89,12 +158,6 @@ export function PaymentPage() {
         </div>
       </div>
     )
-  }
-
-  const paymentMethodNames: Record<string, string> = {
-    alipay: '支付宝',
-    wechat: '微信支付',
-    yunshanfu: '云闪付',
   }
 
   return (
@@ -123,6 +186,21 @@ export function PaymentPage() {
           )}
         </div>
 
+        {/* Polling timeout warning */}
+        {isPollingTimeout && order?.status === 'pending' && (
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
+            <p className="text-sm text-yellow-700">支付超时，请重新下单</p>
+          </div>
+        )}
+
+        {/* Error message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        )}
+
         {/* Order details */}
         <div className="border-t border-gray-200 pt-6 mb-6">
           <h3 className="font-semibold text-gray-900 mb-4">订单详情</h3>
@@ -134,7 +212,7 @@ export function PaymentPage() {
             <div className="flex justify-between">
               <dt className="text-gray-600">套餐</dt>
               <dd className="font-medium text-gray-900">
-                {order?.plan === 'lite' ? '基础版' : order?.plan === 'pro' ? '专业版' : '旗舰版'}
+                {planNameMap[order?.plan || ''] || order?.plan}
               </dd>
             </div>
             <div className="flex justify-between">
@@ -162,24 +240,26 @@ export function PaymentPage() {
                 使用{paymentMethodNames[order.payment_method]}扫描上方二维码完成支付
               </p>
 
-              {/* Simulate payment button for demo */}
-              <button
-                onClick={handleSimulatePayment}
-                disabled={polling}
-                className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 flex items-center justify-center mx-auto"
-              >
-                {polling ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    模拟支付中...
-                  </>
-                ) : (
-                  <>
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    模拟支付成功（演示）
-                  </>
-                )}
-              </button>
+              {/* Simulate payment button - only in dev mode */}
+              {import.meta.env.DEV && (
+                <button
+                  onClick={handleSimulatePayment}
+                  disabled={polling || isPollingTimeout}
+                  className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 flex items-center justify-center mx-auto"
+                >
+                  {polling ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      模拟支付中...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      模拟支付成功（演示）
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -203,7 +283,7 @@ export function PaymentPage() {
               </button>
               <button
                 onClick={checkOrderStatus}
-                disabled={polling}
+                disabled={polling || isPollingTimeout}
                 className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center"
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${polling ? 'animate-spin' : ''}`} />
