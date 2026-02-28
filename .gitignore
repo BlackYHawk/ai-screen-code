@@ -44,3 +44,4 @@ test-results/
 # Misc
 *.tgz
 .cache/
+docs/
