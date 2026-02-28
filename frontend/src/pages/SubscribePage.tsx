@@ -1,36 +1,67 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check, Zap, Crown, Rocket, Loader2 } from 'lucide-react'
 import { getPlans, createOrder, getSubscriptionStatus } from '@/api/client'
 import type { SubscriptionPlan, SubscriptionStatusResponse, CreateOrderRequest } from '@/types/api'
 
-const planIcons = {
+type PlanId = 'lite' | 'pro' | 'max'
+
+const planIcons: Record<PlanId, typeof Zap> = {
   lite: Zap,
   pro: Crown,
   max: Rocket,
 }
 
-const planColors = {
-  lite: 'blue',
-  pro: 'purple',
-  max: 'orange',
+// 固定颜色方案，避免 Tailwind 动态类名问题
+const planColorClasses: Record<PlanId, {
+  border: string
+  bg: string
+  button: string
+  icon: string
+  check: string
+}> = {
+  lite: {
+    border: 'border-blue-500',
+    bg: 'bg-blue-50',
+    button: 'bg-blue-500 hover:bg-blue-600',
+    icon: 'text-blue-500',
+    check: 'text-blue-500',
+  },
+  pro: {
+    border: 'border-purple-500',
+    bg: 'bg-purple-50',
+    button: 'bg-purple-500 hover:bg-purple-600',
+    icon: 'text-purple-500',
+    check: 'text-purple-500',
+  },
+  max: {
+    border: 'border-orange-500',
+    bg: 'bg-orange-50',
+    button: 'bg-orange-500 hover:bg-orange-600',
+    icon: 'text-orange-500',
+    check: 'text-orange-500',
+  },
+}
+
+const defaultColors = planColorClasses.lite
+
+const planNameMap: Record<PlanId, string> = {
+  lite: '基础版',
+  pro: '专业版',
+  max: '旗舰版',
 }
 
 export function SubscribePage() {
   const navigate = useNavigate()
   const [plans, setPlans] = useState<SubscriptionPlan[]>([])
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatusResponse | null>(null)
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
+  const [selectedPlan, setSelectedPlan] = useState<PlanId | null>(null)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('alipay')
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    loadData()
-  }, [])
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const [plansData, statusData] = await Promise.all([
         getPlans(),
@@ -39,11 +70,28 @@ export function SubscribePage() {
       setPlans(plansData)
       setSubscriptionStatus(statusData)
     } catch (err) {
-      console.error('Failed to load data:', err)
+      const message = err instanceof Error ? err.message : '加载数据失败'
+      setError(message)
+      // 重试一次
+      try {
+        const [plansData, statusData] = await Promise.all([
+          getPlans(),
+          getSubscriptionStatus(),
+        ])
+        setPlans(plansData)
+        setSubscriptionStatus(statusData)
+        setError(null)
+      } catch {
+        // 保留原始错误
+      }
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
 
   const handleSubscribe = async () => {
     if (!selectedPlan) {
@@ -62,10 +110,17 @@ export function SubscribePage() {
       const order = await createOrder(request)
       navigate(`/payment/${order.order_id}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : '创建订单失败')
+      const message = err instanceof Error ? err.message : '创建订单失败'
+      setError(message)
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const getSelectedPlanPrice = () => {
+    if (!selectedPlan) return '0'
+    const plan = plans.find(p => p.id === selectedPlan)
+    return plan?.price_display || '0'
   }
 
   if (loading) {
@@ -105,11 +160,21 @@ export function SubscribePage() {
         </p>
       </div>
 
+      {/* Error message */}
+      {error && (
+        <div className="mb-6 max-w-md mx-auto">
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        </div>
+      )}
+
       {/* Plans */}
       <div className="grid md:grid-cols-3 gap-8 mb-12">
         {plans.map((plan) => {
-          const Icon = planIcons[plan.id as keyof typeof planIcons] || Zap
-          const color = planColors[plan.id as keyof typeof planColors] || 'blue'
+          const planId = plan.id as PlanId
+          const Icon = planIcons[planId] || Zap
+          const colorClasses = planColorClasses[planId] || defaultColors
           const isSelected = selectedPlan === plan.id
 
           return (
@@ -119,11 +184,11 @@ export function SubscribePage() {
                 relative rounded-2xl border-2 p-6 cursor-pointer transition-all
                 hover:shadow-lg
                 ${isSelected
-                  ? `border-${color}-500 bg-${color}-50`
+                  ? `${colorClasses.border} ${colorClasses.bg}`
                   : 'border-gray-200 bg-white hover:border-gray-300'
                 }
               `}
-              onClick={() => setSelectedPlan(plan.id)}
+              onClick={() => setSelectedPlan(planId)}
             >
               {plan.id === 'pro' && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -134,9 +199,9 @@ export function SubscribePage() {
               )}
 
               <div className="text-center mb-6">
-                <Icon className={`w-12 h-12 mx-auto mb-4 text-${color}-500`} />
+                <Icon className={`w-12 h-12 mx-auto mb-4 ${colorClasses.icon}`} />
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {plan.name === 'lite' ? '基础版' : plan.name === 'pro' ? '专业版' : '旗舰版'}
+                  {planNameMap[planId] || plan.name}
                 </h3>
                 <div className="flex items-baseline justify-center">
                   <span className="text-4xl font-bold text-gray-900">¥{plan.price_display}</span>
@@ -147,7 +212,7 @@ export function SubscribePage() {
               <ul className="space-y-3 mb-6">
                 {plan.features.map((feature, index) => (
                   <li key={index} className="flex items-start">
-                    <Check className={`w-5 h-5 text-${color}-500 mr-2 flex-shrink-0 mt-0.5`} />
+                    <Check className={`w-5 h-5 ${colorClasses.check} mr-2 flex-shrink-0 mt-0.5`} />
                     <span className="text-gray-600">{feature}</span>
                   </li>
                 ))}
@@ -157,7 +222,7 @@ export function SubscribePage() {
                 className={`
                   w-full py-3 rounded-lg font-medium transition-colors
                   ${isSelected
-                    ? `bg-${color}-500 text-white`
+                    ? `${colorClasses.button} text-white`
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }
                 `}
@@ -207,12 +272,6 @@ export function SubscribePage() {
             ))}
           </div>
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-600 text-sm">{error}</p>
-            </div>
-          )}
-
           <button
             onClick={handleSubscribe}
             disabled={submitting}
@@ -224,7 +283,7 @@ export function SubscribePage() {
                 正在创建订单...
               </>
             ) : (
-              `立即支付 ¥${plans.find(p => p.id === selectedPlan)?.price_display || '0'}`
+              `立即支付 ¥${getSelectedPlanPrice()}`
             )}
           </button>
         </div>
