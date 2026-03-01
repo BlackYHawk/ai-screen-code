@@ -3,6 +3,7 @@ use crate::models::{
     PaymentCallbackRequest, PaymentMethod, Subscription, SubscriptionPlan,
     SubscriptionPlanResponse, SubscriptionStatus, SubscriptionStatusResponse,
 };
+use crate::services::payment_service::PaymentService;
 use crate::state::AppState;
 use axum::{
     extract::{Path, State, Extension},
@@ -70,9 +71,11 @@ pub async fn create_order_handler(
 
     let mut response: CreateOrderResponse = (&order).into();
 
-    // 生成模拟支付信息
-    response.qr_code = Some(generate_mock_qr_code(&order_id, &payment_method));
-    response.payment_url = Some(format!("/payment/{}", order_id));
+    // 使用支付服务生成模拟支付信息
+    let payment_info = PaymentService::generate_qr_code(&order_id, &payment_method);
+    let payment_url = PaymentService::generate_payment_url(&order_id, &payment_method);
+    response.qr_code = Some(payment_info);
+    response.payment_url = Some(payment_url);
 
     Json(ApiResponse::success(response))
 }
@@ -203,14 +206,4 @@ pub async fn get_order_history_handler(
         Ok(orders) => Json(ApiResponse::success(orders.iter().map(|o| OrderHistoryResponse::from(o)).collect())),
         _ => Json(ApiResponse::success(Vec::new())),
     }
-}
-
-/// 生成模拟支付二维码
-fn generate_mock_qr_code(order_id: &str, payment_method: &PaymentMethod) -> String {
-    let prefix = match payment_method {
-        PaymentMethod::Wechat => "wechat://pay/",
-        PaymentMethod::Alipay => "alipay://",
-        PaymentMethod::Yunshanfu => "yunshanfu://",
-    };
-    format!("{}mock_order_{}", prefix, order_id)
 }
