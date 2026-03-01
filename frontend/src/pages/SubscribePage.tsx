@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Check, Zap, Crown, Rocket, Loader2, ArrowLeft } from 'lucide-react'
+import { Check, Zap, Crown, Rocket, Loader2, Sparkles } from 'lucide-react'
 import { getPlans, createOrder, getSubscriptionStatus } from '@/api/client'
 import type { SubscriptionPlan, SubscriptionStatusResponse, CreateOrderRequest } from '@/types/api'
 
@@ -23,30 +23,38 @@ const planIcons: Record<PlanId, typeof Zap> = {
 const planColorClasses: Record<PlanId, {
   border: string
   bg: string
+  bgLight: string
   button: string
   icon: string
   check: string
+  gradient: string
 }> = {
   lite: {
     border: 'border-blue-500',
-    bg: 'bg-blue-50',
+    bg: 'bg-blue-500',
+    bgLight: 'bg-blue-50',
     button: 'bg-blue-500 hover:bg-blue-600',
     icon: 'text-blue-500',
     check: 'text-blue-500',
+    gradient: 'from-blue-500/10 to-transparent',
   },
   pro: {
     border: 'border-purple-500',
-    bg: 'bg-purple-50',
+    bg: 'bg-purple-500',
+    bgLight: 'bg-purple-50',
     button: 'bg-purple-500 hover:bg-purple-600',
     icon: 'text-purple-500',
     check: 'text-purple-500',
+    gradient: 'from-purple-500/10 to-transparent',
   },
   max: {
     border: 'border-orange-500',
-    bg: 'bg-orange-50',
+    bg: 'bg-orange-500',
+    bgLight: 'bg-orange-50',
     button: 'bg-orange-500 hover:bg-orange-600',
     icon: 'text-orange-500',
     check: 'text-orange-500',
+    gradient: 'from-orange-500/10 to-transparent',
   },
 }
 
@@ -57,6 +65,12 @@ const planNameMap: Record<PlanId, string> = {
   pro: '专业版',
   max: '旗舰版',
 }
+
+const paymentMethods = [
+  { id: 'wechat', label: '微信支付', icon: '💬' },
+  { id: 'alipay', label: '支付宝', icon: '💳' },
+  { id: 'yunshanfu', label: '云闪付', icon: '☁️' },
+]
 
 export function SubscribePage() {
   const navigate = useNavigate()
@@ -135,174 +149,204 @@ export function SubscribePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="text-center">
+          <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-3" />
+          <p className="text-gray-500">加载中...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Back button */}
-      <div className="flex items-center mb-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 hover:bg-gray-200 rounded-lg mr-2"
-        >
-          <ArrowLeft className="w-5 h-5 text-gray-600" />
-        </button>
-        <h1 className="text-2xl font-bold text-gray-900">订阅套餐</h1>
-      </div>
-
-      {/* Current subscription status */}
-      {subscriptionStatus?.active && (
-        <div className="mb-8 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-green-800">当前订阅: {subscriptionStatus.plan}</h3>
-              <p className="text-sm text-green-600">
-                有效期至: {subscriptionStatus.end_date}
-              </p>
-            </div>
-            <span className="px-3 py-1 bg-green-500 text-white text-sm rounded-full">
-              {subscriptionStatus.status}
-            </span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-6">
+      <div className="max-w-5xl mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg shadow-blue-500/25">
+            <Sparkles className="w-7 h-7 text-white" />
           </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">选择您的套餐</h1>
+          <p className="text-gray-500">解锁全部AI能力，让代码生成更高效</p>
         </div>
-      )}
 
-      {/* Header */}
-      <div className="text-center mb-6">
-        <p className="text-gray-600">
-          解锁全部功能，让代码生成更高效
-        </p>
-      </div>
-
-      {/* Error message */}
-      {error && (
-        <div className="mb-6 max-w-md mx-auto">
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-600 text-sm">{error}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Plans */}
-      <div className="grid md:grid-cols-3 gap-8 mb-12">
-        {plans.map((plan) => {
-          const planId = plan.id as PlanId
-          const Icon = planIcons[planId] || Zap
-          const colorClasses = planColorClasses[planId] || defaultColors
-          const isSelected = selectedPlan === plan.id
-
-          return (
-            <div
-              key={plan.id}
-              className={`
-                relative rounded-2xl border-2 p-6 cursor-pointer transition-all
-                hover:shadow-lg
-                ${isSelected
-                  ? `${colorClasses.border} ${colorClasses.bg}`
-                  : 'border-gray-200 bg-white hover:border-gray-300'
-                }
-              `}
-              onClick={() => setSelectedPlan(planId)}
-            >
-              {plan.id === 'pro' && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="px-3 py-1 bg-purple-500 text-white text-xs font-medium rounded-full">
-                    最受欢迎
-                  </span>
+        {/* Current subscription status */}
+        {subscriptionStatus?.active && (
+          <div className="mb-6 p-4 bg-white/80 backdrop-blur-sm border border-green-200 rounded-xl shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <Check className="w-5 h-5 text-green-600" />
                 </div>
-              )}
-
-              <div className="text-center mb-6">
-                <Icon className={`w-12 h-12 mx-auto mb-4 ${colorClasses.icon}`} />
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {planNameMap[planId] || plan.name}
-                </h3>
-                <div className="flex items-baseline justify-center">
-                  <span className="text-4xl font-bold text-gray-900">¥{plan.price_display}</span>
-                  <span className="text-gray-500 ml-1">/月</span>
+                <div>
+                  <h3 className="font-semibold text-gray-900">当前订阅: {subscriptionStatus.plan}</h3>
+                  <p className="text-sm text-gray-500">有效期至: {subscriptionStatus.end_date}</p>
                 </div>
               </div>
-
-              <ul className="space-y-3 mb-6">
-                {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-start">
-                    <Check className={`w-5 h-5 ${colorClasses.check} mr-2 flex-shrink-0 mt-0.5`} />
-                    <span className="text-gray-600">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                className={`
-                  w-full py-3 rounded-lg font-medium transition-colors
-                  ${isSelected
-                    ? `${colorClasses.button} text-white`
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }
-                `}
-              >
-                {isSelected ? '已选择' : '选择套餐'}
-              </button>
+              <span className="px-3 py-1.5 bg-green-500 text-white text-sm font-medium rounded-full">
+                {subscriptionStatus.status}
+              </span>
             </div>
-          )
-        })}
-      </div>
+          </div>
+        )}
 
-      {/* Payment method selection */}
-      {selectedPlan && (
-        <div className="max-w-md mx-auto">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">选择支付方式</h3>
+        {/* Error message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        )}
 
-          <div className="flex space-x-3 mb-4">
-            {[
-              { id: 'wechat', label: '微信支付', icon: '💬' },
-              { id: 'alipay', label: '支付宝', icon: '💳' },
-              { id: 'yunshanfu', label: '云闪付', icon: '☁️' },
-            ].map((method) => (
-              <label
-                key={method.id}
+        {/* Plans */}
+        <div className="grid md:grid-cols-3 gap-4 mb-6">
+          {plans.map((plan) => {
+            const planId = plan.id as PlanId
+            const Icon = planIcons[planId] || Zap
+            const colorClasses = planColorClasses[planId] || defaultColors
+            const isSelected = selectedPlan === plan.id
+            const isPro = plan.id === 'pro'
+
+            return (
+              <div
+                key={plan.id}
                 className={`
-                  flex-1 flex items-center justify-center p-3 border-2 rounded-lg cursor-pointer transition-colors
-                  ${selectedPaymentMethod === method.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                  relative rounded-2xl border-2 p-5 cursor-pointer transition-all duration-300
+                  hover:shadow-xl hover:-translate-y-1
+                  ${isSelected
+                    ? `${colorClasses.border} ${colorClasses.bgLight} shadow-lg`
+                    : 'border-gray-100 bg-white/80 backdrop-blur hover:border-gray-300'
                   }
                 `}
+                onClick={() => setSelectedPlan(planId)}
               >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value={method.id}
-                  checked={selectedPaymentMethod === method.id}
-                  onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                  className="sr-only"
-                />
-                <span className="text-xl mr-2">{method.icon}</span>
-                <span className="font-medium text-gray-900 text-sm">{method.label}</span>
-              </label>
-            ))}
-          </div>
+                {/* Popular badge */}
+                {isPro && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="px-4 py-1 bg-gradient-to-r from-purple-500 to-purple-600 text-white text-xs font-medium rounded-full shadow-lg">
+                      最受欢迎
+                    </span>
+                  </div>
+                )}
 
-          <button
-            onClick={handleSubscribe}
-            disabled={submitting}
-            className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-          >
-            {submitting ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                正在创建订单...
-              </>
-            ) : (
-              `立即支付 ¥${getSelectedPlanPrice()}`
-            )}
-          </button>
+                {/* Selected indicator */}
+                {isSelected && (
+                  <div className="absolute top-3 right-3">
+                    <div className={`w-5 h-5 ${colorClasses.bg} rounded-full flex items-center justify-center`}>
+                      <Check className="w-3 h-3 text-white" />
+                    </div>
+                  </div>
+                )}
+
+                <div className="text-center mb-4">
+                  <div className={`
+                    inline-flex items-center justify-center w-12 h-12 rounded-xl mb-3
+                    ${isSelected ? `${colorClasses.bg}` : 'bg-gray-100'}
+                    transition-colors duration-300
+                  `}>
+                    <Icon className={`w-6 h-6 ${isSelected ? 'text-white' : colorClasses.icon}`} />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">
+                    {planNameMap[planId] || plan.name}
+                  </h3>
+                  <div className="flex items-baseline justify-center">
+                    <span className="text-3xl font-bold text-gray-900">¥{plan.price_display}</span>
+                    <span className="text-gray-400 text-sm ml-1">/月</span>
+                  </div>
+                </div>
+
+                <ul className="space-y-2 mb-4">
+                  {plan.features.map((feature, index) => (
+                    <li key={index} className="flex items-center">
+                      <Check className={`w-4 h-4 ${colorClasses.check} mr-2 flex-shrink-0`} />
+                      <span className="text-gray-600 text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  className={`
+                    w-full py-2.5 rounded-xl font-medium transition-all duration-300
+                    ${isSelected
+                      ? `${colorClasses.button} text-white shadow-lg shadow-${planId === 'lite' ? 'blue' : planId === 'pro' ? 'purple' : 'orange'}-500/25`
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }
+                  `}
+                >
+                  {isSelected ? '✓ 已选择' : '选择套餐'}
+                </button>
+              </div>
+            )
+          })}
         </div>
-      )}
+
+        {/* Payment & Action */}
+        {selectedPlan && (
+          <div className="max-w-lg mx-auto">
+            {/* Selected plan summary */}
+            <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl p-4 mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-gray-500">已选套餐</span>
+                <span className="font-semibold text-gray-900">
+                  {planNameMap[selectedPlan as PlanId]} - ¥{getSelectedPlanPrice()}/月
+                </span>
+              </div>
+
+              {/* Payment methods */}
+              <div className="space-y-2">
+                <p className="text-sm text-gray-500 font-medium">支付方式</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {paymentMethods.map((method) => (
+                    <label
+                      key={method.id}
+                      className={`
+                        flex items-center justify-center p-2.5 border-2 rounded-xl cursor-pointer transition-all duration-200
+                        ${selectedPaymentMethod === method.id
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                        }
+                      `}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value={method.id}
+                        checked={selectedPaymentMethod === method.id}
+                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                        className="sr-only"
+                      />
+                      <span className="text-lg mr-1.5">{method.icon}</span>
+                      <span className="font-medium text-gray-900 text-xs">{method.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Submit button */}
+            <button
+              onClick={handleSubscribe}
+              disabled={submitting}
+              className="w-full py-3.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-blue-500/25 transition-all duration-300 hover:shadow-xl"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  正在创建订单...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  立即支付 ¥{getSelectedPlanPrice()}
+                </>
+              )}
+            </button>
+
+            <p className="text-center text-xs text-gray-400 mt-3">
+              支付即表示您同意我们的服务条款
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
