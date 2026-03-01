@@ -11,6 +11,8 @@ import {
   CardsPage,
   OrdersPage,
   SubscribePage,
+  TermsPage,
+  PrivacyPage,
   ForgotPasswordPage,
   OAuthCallbackPage,
 } from './pages'
@@ -92,5 +94,13 @@ export const router = createBrowserRouter([
         <SubscribePage />
       </ProtectedRoute>
     ),
+  },
+  {
+    path: '/terms',
+    element: <TermsPage />,
+  },
+  {
+    path: '/privacy',
+    element: <PrivacyPage />,
   },
 ])

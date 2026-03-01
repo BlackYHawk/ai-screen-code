@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Check, Zap, Crown, Rocket, Loader2, Sparkles } from 'lucide-react'
+import { useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { Check, Zap, Crown, Rocket, Loader2, Sparkles, ArrowLeft } from 'lucide-react'
 import { getPlans, createOrder, getSubscriptionStatus } from '@/api/client'
 import type { SubscriptionPlan, SubscriptionStatusResponse, CreateOrderRequest } from '@/types/api'
 
@@ -161,13 +161,18 @@ export function SubscribePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-6">
       <div className="max-w-5xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg shadow-blue-500/25">
-            <Sparkles className="w-7 h-7 text-white" />
+        {/* Header with back button */}
+        <div className="flex items-center mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center justify-center w-10 h-10 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow mr-4"
+          >
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">订阅套餐</h1>
+            <p className="text-sm text-gray-500">解锁全部AI能力，让代码生成更高效</p>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">选择您的套餐</h1>
-          <p className="text-gray-500">解锁全部AI能力，让代码生成更高效</p>
         </div>
 
         {/* Current subscription status */}
@@ -281,25 +286,25 @@ export function SubscribePage() {
 
         {/* Payment & Action */}
         {selectedPlan && (
-          <div className="max-w-lg mx-auto">
+          <div className="max-w-2xl mx-auto">
             {/* Selected plan summary */}
-            <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl p-4 mb-4">
-              <div className="flex items-center justify-between mb-3">
+            <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl p-5 mb-4">
+              <div className="flex items-center justify-between mb-4">
                 <span className="text-gray-500">已选套餐</span>
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-gray-900 text-lg">
                   {planNameMap[selectedPlan as PlanId]} - ¥{getSelectedPlanPrice()}/月
                 </span>
               </div>
 
               {/* Payment methods */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <p className="text-sm text-gray-500 font-medium">支付方式</p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-3">
                   {paymentMethods.map((method) => (
                     <label
                       key={method.id}
                       className={`
-                        flex items-center justify-center p-2.5 border-2 rounded-xl cursor-pointer transition-all duration-200
+                        flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all duration-200
                         ${selectedPaymentMethod === method.id
                           ? 'border-blue-500 bg-blue-50'
                           : 'border-gray-200 hover:border-gray-300'
@@ -314,8 +319,8 @@ export function SubscribePage() {
                         onChange={(e) => setSelectedPaymentMethod(e.target.value)}
                         className="sr-only"
                       />
-                      <span className="text-lg mr-1.5">{method.icon}</span>
-                      <span className="font-medium text-gray-900 text-xs">{method.label}</span>
+                      <span className="text-xl mr-2">{method.icon}</span>
+                      <span className="font-medium text-gray-900">{method.label}</span>
                     </label>
                   ))}
                 </div>
@@ -326,7 +331,7 @@ export function SubscribePage() {
             <button
               onClick={handleSubscribe}
               disabled={submitting}
-              className="w-full py-3.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-blue-500/25 transition-all duration-300 hover:shadow-xl"
+              className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-blue-500/25 transition-all duration-300 hover:shadow-xl"
             >
               {submitting ? (
                 <>
@@ -341,8 +346,11 @@ export function SubscribePage() {
               )}
             </button>
 
-            <p className="text-center text-xs text-gray-400 mt-3">
-              支付即表示您同意我们的服务条款
+            <p className="text-center text-sm text-gray-400 mt-4">
+              支付即表示您同意我们的
+              <Link to="/terms" className="text-blue-500 hover:underline mx-1">服务条款</Link>
+              和
+              <Link to="/privacy" className="text-blue-500 hover:underline mx-1">隐私政策</Link>
             </p>
           </div>
         )}
