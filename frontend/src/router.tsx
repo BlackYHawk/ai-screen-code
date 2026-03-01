@@ -11,6 +11,7 @@ import {
   CardsPage,
   OrdersPage,
   SubscribePage,
+  PaymentPage,
   TermsPage,
   PrivacyPage,
   ForgotPasswordPage,
@@ -92,6 +93,14 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <SubscribePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/payment/:orderId',
+    element: (
+      <ProtectedRoute>
+        <PaymentPage />
       </ProtectedRoute>
     ),
   },
