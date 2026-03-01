@@ -74,10 +74,15 @@ pub struct KimiService {
 }
 
 impl KimiService {
-    pub fn new() -> Self {
+    pub fn new(model: &str) -> Self {
+        let model_name = if model.is_empty() {
+            DEFAULT_MODEL.to_string()
+        } else {
+            model.to_string()
+        };
         Self {
             client: Client::new(),
-            default_model: DEFAULT_MODEL.to_string(),
+            default_model: model_name,
         }
     }
 
@@ -107,7 +112,7 @@ impl KimiService {
 
 impl Default for KimiService {
     fn default() -> Self {
-        Self::new()
+        Self::new(DEFAULT_MODEL)
     }
 }
 

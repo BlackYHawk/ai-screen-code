@@ -1,3 +1,6 @@
+// 加载 .env 文件中的环境变量
+use dotenv::dotenv;
+
 use ai_screen_code::config::Config;
 use ai_screen_code::handlers::{
     bind_card_handler, create_order_handler, delete_card_handler, delete_history_handler,
@@ -33,6 +36,23 @@ async fn root() -> &'static str {
 
 #[tokio::main]
 async fn main() {
+    // 加载 .env 文件中的环境变量 (从项目根目录)
+    let project_root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).parent()
+        .map(|p| p.join(".env"))
+        .unwrap_or_else(|| std::path::PathBuf::from(".env"));
+    if dotenv::from_path(&project_root).is_ok() {
+        println!("Loaded .env from {:?}", project_root);
+    } else {
+        println!("Failed to load .env from {:?}", project_root);
+    }
+
+    // 检查 MINIMAX_API_KEY 是否加载
+    if let Ok(key) = std::env::var("MINIMAX_API_KEY") {
+        println!("MINIMAX_API_KEY loaded: {} chars", key.len());
+    } else {
+        println!("MINIMAX_API_KEY NOT loaded");
+    }
+
     // Initialize tracing
     tracing_subscriber::registry()
         .with(

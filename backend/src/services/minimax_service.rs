@@ -53,6 +53,8 @@ struct MiniMaxChoice {
 struct MiniMaxResponseMessage {
     role: String,
     content: String,
+    #[serde(default)]
+    reasoning_content: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -68,10 +70,15 @@ pub struct MiniMaxService {
 }
 
 impl MiniMaxService {
-    pub fn new() -> Self {
+    pub fn new(model: &str) -> Self {
+        let model_name = if model.is_empty() {
+            DEFAULT_MODEL.to_string()
+        } else {
+            model.to_string()
+        };
         Self {
             client: Client::new(),
-            default_model: DEFAULT_MODEL.to_string(),
+            default_model: model_name,
         }
     }
 
@@ -101,7 +108,7 @@ impl MiniMaxService {
 
 impl Default for MiniMaxService {
     fn default() -> Self {
-        Self::new()
+        Self::new(DEFAULT_MODEL)
     }
 }
 
@@ -116,6 +123,9 @@ impl AiService for MiniMaxService {
     ) -> AppResult<String> {
         let base_url = base_url.unwrap_or(DEFAULT_BASE_URL);
         let url = format!("{}/text/chatcompletion_v2", base_url);
+
+        tracing::info!("MiniMax API URL: {}", url);
+        tracing::info!("MiniMax model: {}", self.default_model);
 
         let prompt = self.build_prompt(language);
         let image_url = format!("data:image/png;base64,{}", image_base64);
@@ -162,10 +172,17 @@ impl AiService for MiniMaxService {
             .await
             .map_err(|e| AppError::AiServiceError(format!("Failed to parse response: {}", e)))?;
 
+        // Get content from response, fallback to reasoning_content if empty
         let code = minimax_response
             .choices
             .first()
-            .and_then(|choice| Some(choice.message.content.clone()))
+            .map(|choice| {
+                if choice.message.content.is_empty() {
+                    choice.message.reasoning_content.clone()
+                } else {
+                    choice.message.content.clone()
+                }
+            })
             .ok_or_else(|| AppError::AiServiceError("No response content".to_string()))?;
 
         Ok(code)
