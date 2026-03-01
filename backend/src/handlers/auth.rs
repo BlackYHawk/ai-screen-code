@@ -52,6 +52,7 @@ fn generate_token(user_id: &str, email: &str, secret: &[u8]) -> Result<String, A
 }
 
 /// 验证JWT Token
+#[allow(dead_code)]
 fn verify_token(token: &str, secret: &[u8]) -> Result<TokenData<Claims>, AppError> {
     decode::<Claims>(
         token,
