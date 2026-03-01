@@ -123,7 +123,6 @@ async fn main() {
         .route("/api/v1/settings", post(update_settings_handler))
         // Subscription routes (public)
         .route("/api/v1/subscriptions/plans", get(get_plans_handler))
-        .route("/api/v1/subscriptions/create", post(create_order_handler))
         .route("/api/v1/subscriptions/webhook", post(payment_callback_handler))
         .route("/api/v1/subscriptions/orders/:order_id", get(get_order_status_handler));
 
@@ -138,6 +137,7 @@ async fn main() {
         .route("/api/v1/auth/cards/:id", delete(delete_card_handler))
         // Subscription routes (need auth)
         .route("/api/v1/subscriptions/status", get(get_subscription_status_handler))
+        .route("/api/v1/subscriptions/create", post(create_order_handler))
         .route("/api/v1/subscriptions/orders", get(get_order_history_handler))
         .layer(middleware::from_fn_with_state(jwt_secret, auth_middleware));
 
