@@ -22,24 +22,40 @@ impl EmailService {
         let smtp_user = &self.config.smtp_user;
         let smtp_password = &self.config.smtp_password;
 
+        tracing::info!("Building SMTP transport to {}:{}", smtp_host, smtp_port);
+
+        // 尝试 DNS 解析
+        tracing::info!("Attempting DNS lookup for {}", smtp_host);
+        if let Ok(addrs) = std::net::ToSocketAddrs::to_socket_addrs(&(smtp_host.as_str(), smtp_port)) {
+            for addr in addrs {
+                tracing::info!("Resolved {} to {}", smtp_host, addr);
+            }
+        } else {
+            tracing::warn!("DNS lookup failed for {}", smtp_host);
+        }
+
         // 构建 TLS 参数
         let tls_params = TlsParameters::new(smtp_host.clone())
             .map_err(|e| AppError::Internal(format!("Failed to build TLS parameters: {}", e)))?;
 
-        // 根据端口选择 TLS 模式
-        let tls_mode = match smtp_port {
-            // Port 465: 使用 SSL 直接连接 (Wrapper 模式)
-            465 => lettre::transport::smtp::client::Tls::Wrapper(tls_params),
-            // Port 587: 使用 STARTTLS (Required 模式)
-            _ => lettre::transport::smtp::client::Tls::Required(tls_params),
-        };
+        // 使用 SmtpTransport::relay 自动处理 TLS
+        let mut builder = SmtpTransport::relay(&format!("{}:{}", smtp_host, smtp_port))
+            .map_err(|e| AppError::Internal(format!("Failed to create SMTP relay: {}", e)))?;
 
-        // 构建传输层
-        let transport = SmtpTransport::builder_dangerous(&format!("{}:{}", smtp_host, smtp_port))
-            .tls(tls_mode)
+        // 根据端口选择 TLS 模式
+        if smtp_port == 465 {
+            tracing::info!("Using TLS wrapper mode for port 465");
+            builder = builder.tls(lettre::transport::smtp::client::Tls::Wrapper(tls_params));
+        } else {
+            tracing::info!("Using STARTTLS mode for port 587");
+            builder = builder.tls(lettre::transport::smtp::client::Tls::Required(tls_params));
+        }
+
+        let transport = builder
             .credentials(Credentials::new(smtp_user.clone(), smtp_password.clone()))
             .build();
 
+        tracing::info!("SMTP transport built successfully");
         Ok(transport)
     }
 
@@ -180,6 +196,8 @@ impl EmailService {
     /// 发送验证码邮件
     pub fn send_verification_email(&self, to_email: &str, code: &str, code_type: &str) -> Result<(), AppError> {
         tracing::info!("Sending verification email to: {} with code: {} (type: {})", to_email, code, code_type);
+        tracing::info!("SMTP config: host={}, port={}, user={}, from={}",
+            self.config.smtp_host, self.config.smtp_port, self.config.smtp_user, self.config.from_email);
 
         // 构建 SMTP 传输
         let transport = self.build_transport()?;
@@ -199,9 +217,10 @@ impl EmailService {
         let email = self.build_message(to_email, subject, &html_content)?;
 
         // 发送邮件
-        transport
-            .send(&email)
-            .map_err(|e| AppError::Internal(format!("Failed to send email: {}", e)))?;
+        tracing::info!("Sending email...");
+        let result = transport.send(&email);
+        tracing::info!("Email send result: {:?}", result);
+        result.map_err(|e| AppError::Internal(format!("Failed to send email: {}", e)))?;
 
         tracing::info!("Verification email sent successfully to: {}", to_email);
 

@@ -62,9 +62,15 @@ impl AppState {
             }
         };
 
-        // 初始化邮件服务
-        let email_service = config.email.as_ref().map(|email_config| {
-            EmailService::new(email_config.clone())
+        // 初始化邮件服务（只有当 smtp_host 非空时才创建）
+        let email_service = config.email.as_ref().and_then(|email_config| {
+            if email_config.smtp_host.is_empty() {
+                tracing::warn!("Email/SMTP not configured (smtp_host is empty), skipping email service");
+                None
+            } else {
+                tracing::info!("Email/SMTP configured with host: {}:{}", email_config.smtp_host, email_config.smtp_port);
+                Some(EmailService::new(email_config.clone()))
+            }
         });
 
         Self {

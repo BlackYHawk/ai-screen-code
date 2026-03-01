@@ -159,6 +159,33 @@ const authClient = {
     return result.data!
   },
 
+  // Upload avatar
+  async uploadAvatar(file: File): Promise<{ url: string }> {
+    const formData = new FormData()
+    formData.append('avatar', file)
+
+    const token = this.getToken()
+    const response = await fetch('/api/v1/auth/avatar', {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    })
+
+    const result: ApiResponse<{ url: string }> = await response.json()
+
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to upload avatar')
+    }
+
+    // Update stored user with new avatar
+    const user = this.getStoredUser()
+    if (user && result.data) {
+      this.setStoredUser({ ...user, avatar: result.data.url })
+    }
+
+    return result.data!
+  },
+
   // Get bank cards
   async getBankCards(): Promise<BankCard[]> {
     const response = await fetch('/api/v1/auth/cards', {

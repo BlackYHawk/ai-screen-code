@@ -3,16 +3,18 @@ import { useNavigate, Link } from 'react-router-dom'
 import authClient from '@/api/auth'
 import { Card, Button, Input } from '@/components/common'
 import { toast } from 'sonner'
-import { LogIn, Mail, Lock, ArrowRight, MessageCircle, Home } from 'lucide-react'
+import { LogIn, Mail, Lock, ArrowRight, MessageCircle, ArrowLeft } from 'lucide-react'
 
 export function LoginPage() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError('')
 
     if (!email || !password) {
       toast.error('请填写所有字段')
@@ -26,33 +28,34 @@ export function LoginPage() {
       navigate('/')
     } catch (err) {
       const message = err instanceof Error ? err.message : '登录失败'
-      toast.error(message)
+      setError(message)
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleThirdPartyLogin = async (provider: string) => {
+    setError('')
     try {
       const { url } = await authClient.getOAuthUrl(provider)
       window.location.href = url
     } catch (err) {
       const message = err instanceof Error ? err.message : '获取授权链接失败'
-      toast.error(message)
+      setError(message)
     }
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-4">
-      {/* Back to home - top right */}
-      <div className="flex justify-end">
-        <Link
-          to="/"
+      {/* Back button */}
+      <div className="flex items-center">
+        <button
+          onClick={() => navigate(-1)}
           className="flex items-center text-gray-500 hover:text-gray-700 text-sm"
         >
-          <Home className="w-4 h-4 mr-1" />
-          返回首页
-        </Link>
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          返回
+        </button>
       </div>
 
       <div className="flex-1 flex items-center justify-center">
@@ -115,6 +118,12 @@ export function LoginPage() {
                   忘记密码？
                 </Link>
               </div>
+
+              {error && (
+                <div className="text-red-500 text-sm text-center bg-red-50 py-2 rounded-md">
+                  {error}
+                </div>
+              )}
 
               <Button
                 type="submit"

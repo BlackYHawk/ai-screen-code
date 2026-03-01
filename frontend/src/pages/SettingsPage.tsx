@@ -1,11 +1,11 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAppStore } from '@/stores/useAppStore'
-import { Layout } from '@/components/layout'
 import { Card, CardHeader, Button, Input } from '@/components/common'
 import { validateApiKey } from '@/api/client'
 import { toast } from 'sonner'
 import type { AIModel } from '@/types/api'
-import { Key, CheckCircle, XCircle } from 'lucide-react'
+import { Key, CheckCircle, XCircle, ArrowLeft } from 'lucide-react'
 
 const models: AIModel[] = ['qwen', 'minimax', 'kimi', 'glm']
 
@@ -75,9 +75,18 @@ export function SettingsPage() {
   }
 
   return (
-    <Layout>
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">设置</h1>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* 返回按钮 */}
+        <div className="flex items-center mb-6">
+          <Link
+            to="/profile"
+            className="p-2 hover:bg-gray-200 rounded-lg mr-2"
+          >
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
+          </Link>
+          <h1 className="text-2xl font-bold text-gray-900">模型设置</h1>
+        </div>
 
         <Card className="mb-6">
           <CardHeader>
@@ -150,6 +159,6 @@ export function SettingsPage() {
           </ul>
         </Card>
       </div>
-    </Layout>
+    </div>
   )
 }

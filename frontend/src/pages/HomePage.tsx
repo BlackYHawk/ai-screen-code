@@ -104,13 +104,33 @@ export function HomePage() {
   return (
     <Layout>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             AI Screen Code
           </h1>
           <p className="text-lg text-gray-600">
             上传UI设计图片，AI自动生成前端代码
           </p>
+        </div>
+
+        {/* Subscription Banner Marquee */}
+        <div
+          className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg py-2 px-4 overflow-hidden cursor-pointer"
+          onClick={() => navigate('/subscribe')}
+        >
+          <div className="flex items-center animate-marquee whitespace-nowrap">
+            <span className="text-blue-600 font-medium">🔥 专业版限时优惠中，首月仅需9.9元</span>
+            <span className="mx-4 text-gray-400">|</span>
+            <span className="text-purple-600 font-medium">🎉 新用户专享，订阅即送100积分</span>
+            <span className="mx-4 text-gray-400">|</span>
+            <span className="text-green-600 font-medium">🚀 企业版上线，定制AI解决方案</span>
+            <span className="mx-4 text-gray-400">|</span>
+            <span className="text-blue-600 font-medium">🔥 专业版限时优惠中，首月仅需9.9元</span>
+            <span className="mx-4 text-gray-400">|</span>
+            <span className="text-purple-600 font-medium">🎉 新用户专享，订阅即送100积分</span>
+            <span className="mx-4 text-gray-400">|</span>
+            <span className="text-green-600 font-medium">🚀 企业版上线，定制AI解决方案</span>
+          </div>
         </div>
 
         <Card padding="lg">

@@ -31,6 +31,13 @@ export interface HistoryItem {
   created_at: string
 }
 
+// History response from API
+export interface HistoryResponse {
+  success: boolean
+  items: HistoryItem[]
+  total: number
+}
+
 // Model validation request
 export interface ValidateModelRequest {
   model: AIModel
