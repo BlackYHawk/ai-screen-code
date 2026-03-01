@@ -86,3 +86,12 @@ cors:
     - 'Content-Type'
     - 'Authorization'
   allow_credentials: true
+
+# Email/SMTP Configuration
+email:
+  smtp_host: '${SMTP_HOST:-}'
+  smtp_port: 587
+  smtp_user: '${SMTP_USER:-}'
+  smtp_password: '${SMTP_PASSWORD:-}'
+  from_email: '${SMTP_FROM:-noreply@example.com}'
+  from_name: 'AI Screen Code'

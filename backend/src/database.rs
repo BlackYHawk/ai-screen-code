@@ -17,7 +17,12 @@ impl Database {
             std::fs::create_dir_all(parent).ok();
         }
 
-        let conn = Connection::open(&db_path)?;
+        Self::new_with_path(&db_path)
+    }
+
+    /// Create a database with a custom path (for testing)
+    pub fn new_with_path(db_path: &PathBuf) -> Result<Self> {
+        let conn = Connection::open(db_path)?;
 
         let db = Self {
             conn: Mutex::new(conn),
