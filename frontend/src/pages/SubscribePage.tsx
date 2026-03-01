@@ -171,7 +171,6 @@ export function SubscribePage() {
           </button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">订阅套餐</h1>
-            <p className="text-sm text-gray-500">解锁全部AI能力，让代码生成更高效</p>
           </div>
         </div>
 
@@ -195,12 +194,10 @@ export function SubscribePage() {
           </div>
         )}
 
-        {/* Error message */}
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-            <p className="text-red-600 text-sm">{error}</p>
-          </div>
-        )}
+        {/* Plans header */}
+        <div className="text-center mb-6">
+          <p className="text-gray-500">解锁全部AI能力，让代码生成更高效</p>
+        </div>
 
         {/* Plans */}
         <div className="grid md:grid-cols-3 gap-4 mb-6">
@@ -287,6 +284,13 @@ export function SubscribePage() {
         {/* Payment & Action */}
         {selectedPlan && (
           <div className="max-w-2xl mx-auto">
+            {/* Error message - above pay button */}
+            {error && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+            )}
+
             {/* Selected plan summary */}
             <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl p-5 mb-4">
               <div className="flex items-center justify-between mb-4">
