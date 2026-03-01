@@ -185,14 +185,14 @@ pub async fn payment_callback_handler(
 pub async fn get_order_status_handler(
     State(state): State<AppState>,
     Path(order_id): Path<String>,
-) -> Result<Json<CreateOrderResponse>, String> {
-    let order = state
-        .db
-        .find_order_by_id(&order_id)
-        .map_err(|e| format!("Failed to find order: {}", e))?
-        .ok_or_else(|| "Order not found".to_string())?;
+) -> Json<ApiResponse<CreateOrderResponse>> {
+    let order = match state.db.find_order_by_id(&order_id) {
+        Ok(Some(order)) => order,
+        Ok(None) => return Json(ApiResponse::error("Order not found".to_string())),
+        Err(e) => return Json(ApiResponse::error(format!("Failed to find order: {}", e))),
+    };
 
-    Ok(Json(CreateOrderResponse::from(&order)))
+    Json(ApiResponse::success(CreateOrderResponse::from(&order)))
 }
 
 /// 获取订单历史
