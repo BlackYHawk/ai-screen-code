@@ -1,18 +1,20 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Shield, Eye, Lock, User } from 'lucide-react'
 
 export function PrivacyPage() {
+  const navigate = useNavigate()
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
       <div className="max-w-3xl mx-auto px-4">
         {/* Header */}
         <div className="flex items-center mb-8">
-          <Link
-            to="/subscribe"
+          <button
+            onClick={() => navigate(-1)}
             className="flex items-center justify-center w-10 h-10 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow mr-4"
           >
             <ArrowLeft className="w-5 h-5 text-gray-600" />
-          </Link>
+          </button>
           <h1 className="text-2xl font-bold text-gray-900">隐私政策</h1>
         </div>
 
