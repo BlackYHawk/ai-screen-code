@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Code2, History, Settings, Home, User, LogOut } from 'lucide-react'
+import { Code2, History, Home, User, LogOut } from 'lucide-react'
 import { WindowControls } from '@/components/common/WindowControls'
 import authClient from '@/api/auth'
 import type { User as UserType } from '@/types/api'
@@ -8,7 +8,6 @@ import type { User as UserType } from '@/types/api'
 const navItems = [
   { path: '/', label: '首页', icon: Home },
   { path: '/history', label: '历史', icon: History },
-  { path: '/settings', label: '设置', icon: Settings },
 ]
 
 export function Header() {

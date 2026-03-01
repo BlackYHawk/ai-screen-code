@@ -9,8 +9,8 @@ use ai_screen_code::handlers::{
     get_profile_handler, get_settings_handler, get_subscription_status_handler, list_cards_handler,
     list_history_handler, list_models_handler, login_handler, payment_callback_handler, register_handler,
     reset_password_handler, send_code_handler, third_party_bind_handler, third_party_login_handler,
-    update_model_config_handler, update_profile_handler, update_settings_handler, validate_model_handler,
-    verify_code_handler,
+    update_model_config_handler, update_profile_handler, update_settings_handler, upload_avatar_handler,
+    validate_model_handler, verify_code_handler,
 };
 use ai_screen_code::middleware::auth_middleware;
 use ai_screen_code::state::AppState;
@@ -18,10 +18,12 @@ use axum::{
     middleware,
     routing::{delete, get, post, put},
     Router,
+    ServiceExt,
 };
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
+use tower_http::services::ServeDir;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 /// Health check endpoint
@@ -51,6 +53,13 @@ async fn main() {
         println!("MINIMAX_API_KEY loaded: {} chars", key.len());
     } else {
         println!("MINIMAX_API_KEY NOT loaded");
+    }
+
+    // 检查 SMTP_HOST 是否加载
+    if let Ok(host) = std::env::var("SMTP_HOST") {
+        println!("SMTP_HOST loaded: {}", host);
+    } else {
+        println!("SMTP_HOST NOT loaded");
     }
 
     // Initialize tracing
@@ -115,9 +124,7 @@ async fn main() {
         // Subscription routes (public)
         .route("/api/v1/subscriptions/plans", get(get_plans_handler))
         .route("/api/v1/subscriptions/create", post(create_order_handler))
-        .route("/api/v1/subscriptions/status", get(get_subscription_status_handler))
         .route("/api/v1/subscriptions/webhook", post(payment_callback_handler))
-        .route("/api/v1/subscriptions/orders", get(get_order_history_handler))
         .route("/api/v1/subscriptions/orders/:order_id", get(get_order_status_handler));
 
     // Protected routes with auth middleware
@@ -125,16 +132,22 @@ async fn main() {
     let protected_routes = Router::new()
         .route("/api/v1/auth/profile", get(get_profile_handler))
         .route("/api/v1/auth/profile", put(update_profile_handler))
+        .route("/api/v1/auth/avatar", post(upload_avatar_handler))
         .route("/api/v1/auth/cards", get(list_cards_handler))
         .route("/api/v1/auth/cards", post(bind_card_handler))
         .route("/api/v1/auth/cards/:id", delete(delete_card_handler))
+        // Subscription routes (need auth)
+        .route("/api/v1/subscriptions/status", get(get_subscription_status_handler))
+        .route("/api/v1/subscriptions/orders", get(get_order_history_handler))
         .layer(middleware::from_fn_with_state(jwt_secret, auth_middleware));
 
     // Merge routes
     let app = public_routes
         .merge(protected_routes)
         .layer(cors)
-        .with_state(app_state);
+        .with_state(app_state)
+        // Serve static files (avatars)
+        .fallback_service(ServeDir::new("static"));
 
     // Get server address
     let addr = SocketAddr::from(([0, 0, 0, 0], port));

@@ -234,6 +234,33 @@ fn apply_env_overrides(mut config: Config) -> Config {
         }
     }
 
+    // Email/SMTP Configuration
+    if let Some(email_config) = config.email.take() {
+        let smtp_host = std::env::var("SMTP_HOST").unwrap_or(email_config.smtp_host.clone());
+        let smtp_port: u16 = std::env::var("SMTP_PORT")
+            .unwrap_or_else(|_| email_config.smtp_port.to_string())
+            .parse()
+            .unwrap_or(email_config.smtp_port);
+        let smtp_user = std::env::var("SMTP_USER").unwrap_or(email_config.smtp_user.clone());
+        let smtp_password = std::env::var("SMTP_PASSWORD").unwrap_or(email_config.smtp_password.clone());
+        let from_email = std::env::var("SMTP_FROM").unwrap_or(email_config.from_email.clone());
+        let from_name = std::env::var("SMTP_FROM_NAME").unwrap_or(email_config.from_name.clone());
+
+        if !smtp_host.is_empty() {
+            config.email = Some(EmailConfig {
+                smtp_host,
+                smtp_port,
+                smtp_user,
+                smtp_password,
+                from_email,
+                from_name,
+            });
+            tracing::info!("Email/SMTP configured from environment");
+        } else {
+            config.email = Some(email_config);
+        }
+    }
+
     config
 }
 

@@ -1,8 +1,9 @@
-import axios, { type AxiosProgressEvent } from 'axios'
+import axios from 'axios'
 import type {
   GenerateRequest,
   GenerateResponse,
   HistoryItem,
+  HistoryResponse,
   ValidateModelRequest,
   ValidateModelResponse,
   ApiResponse,
@@ -102,7 +103,7 @@ export const generateCodeStream = async (
       let buffer = ''
       let fullCode = ''
 
-      return new Promise<GenerateResponse>((resolve, reject) => {
+      return new Promise<GenerateResponse>((resolve) => {
         const readStream = () => {
           reader.read().then(({ done, value }) => {
             if (done) {
@@ -121,10 +122,8 @@ export const generateCodeStream = async (
               }
 
               resolve({
-                success: true,
                 code: fullCode,
                 language: request.language,
-                model: request.model,
                 id: '',
               })
               return
@@ -178,11 +177,11 @@ export const validateApiKey = async (
 
 // Get history
 export const getHistory = async (): Promise<HistoryItem[]> => {
-  const response = await apiClient.get<ApiResponse<HistoryItem[]>>('/history')
+  const response = await apiClient.get<ApiResponse<HistoryResponse>>('/history')
   if (!response.data.success) {
     throw new Error(response.data.error || 'Failed to get history')
   }
-  return response.data.data || []
+  return response.data.data?.items || []
 }
 
 // Delete history item

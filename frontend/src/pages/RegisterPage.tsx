@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import authClient from '@/api/auth'
 import { Card, Button, Input } from '@/components/common'
 import { toast } from 'sonner'
-import { UserPlus, Mail, Lock, User, ArrowRight, MessageCircle, Home } from 'lucide-react'
+import { UserPlus, Mail, Lock, User, ArrowRight, MessageCircle, ArrowLeft } from 'lucide-react'
 
 export function RegisterPage() {
   const navigate = useNavigate()
@@ -15,18 +15,21 @@ export function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSendingCode, setIsSendingCode] = useState(false)
   const [codeSent, setCodeSent] = useState(false)
+  const [error, setError] = useState('')
 
   const handleThirdPartyLogin = async (provider: string) => {
+    setError('')
     try {
       const { url } = await authClient.getOAuthUrl(provider)
       window.location.href = url
     } catch (err) {
       const message = err instanceof Error ? err.message : '获取授权链接失败'
-      toast.error(message)
+      setError(message)
     }
   }
 
   const handleSendCode = async () => {
+    setError('')
     if (!email) {
       toast.error('请先输入邮箱')
       return
@@ -44,7 +47,7 @@ export function RegisterPage() {
       setCodeSent(true)
     } catch (err) {
       const message = err instanceof Error ? err.message : '发送失败'
-      toast.error(message)
+      setError(message)
     } finally {
       setIsSendingCode(false)
     }
@@ -52,6 +55,7 @@ export function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError('')
 
     if (!username || !email || !password || !confirmPassword) {
       toast.error('请填写所有字段')
@@ -79,7 +83,7 @@ export function RegisterPage() {
         await authClient.verifyCode(email, verificationCode, 'register')
       } catch (err) {
         const message = err instanceof Error ? err.message : '验证码验证失败'
-        toast.error(message)
+        setError(message)
         return
       }
     }
@@ -91,7 +95,7 @@ export function RegisterPage() {
       navigate('/')
     } catch (err) {
       const message = err instanceof Error ? err.message : '注册失败'
-      toast.error(message)
+      setError(message)
     } finally {
       setIsLoading(false)
     }
@@ -99,15 +103,15 @@ export function RegisterPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-4">
-      {/* Back to home - top right */}
-      <div className="flex justify-end">
-        <Link
-          to="/"
+      {/* Back button */}
+      <div className="flex items-center">
+        <button
+          onClick={() => navigate(-1)}
           className="flex items-center text-gray-500 hover:text-gray-700 text-sm"
         >
-          <Home className="w-4 h-4 mr-1" />
-          返回首页
-        </Link>
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          返回
+        </button>
       </div>
 
       <div className="flex-1 flex items-center justify-center">
@@ -220,6 +224,12 @@ export function RegisterPage() {
                   />
                 </div>
               </div>
+
+              {error && (
+                <div className="text-red-500 text-sm text-center bg-red-50 py-2 rounded-md">
+                  {error}
+                </div>
+              )}
 
               <Button
                 type="submit"

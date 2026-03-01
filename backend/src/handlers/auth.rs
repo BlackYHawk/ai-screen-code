@@ -3,7 +3,7 @@ use crate::error::AppError;
 use crate::models::{
     BankCard, BankCardResponse, BindCardRequest, LoginRequest, LoginResponse, RegisterRequest,
     ResetPasswordRequest, SendCodeRequest, ThirdPartyLoginRequest, UpdateProfileRequest, User,
-    UserResponse, VerificationCode, VerifyCodeRequest,
+    UserResponse, VerificationCode, VerifyCodeRequest, ApiResponse,
 };
 use crate::services::oauth::OAuthServiceFactory;
 use crate::state::AppState;
@@ -12,11 +12,13 @@ use axum::{
     response::Json,
     Extension,
 };
+use axum::extract::Multipart;
 use bcrypt::{hash, verify};
 use chrono::Utc;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, TokenData, Validation};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
+use std::path::Path as StdPath;
 use uuid::Uuid;
 
 /// JWT Claims
@@ -72,7 +74,7 @@ fn get_db(state: &AppState) -> std::sync::Arc<Database> {
 pub async fn register_handler(
     State(state): State<AppState>,
     Json(req): Json<RegisterRequest>,
-) -> Result<Json<LoginResponse>, AppError> {
+) -> Result<Json<ApiResponse<LoginResponse>>, AppError> {
     // Input validation
     if req.username.len() < 3 || req.username.len() > 30 {
         return Err(AppError::BadRequest(
@@ -126,17 +128,17 @@ pub async fn register_handler(
 
     tracing::info!("User registered: {}", user.email);
 
-    Ok(Json(LoginResponse {
+    Ok(Json(ApiResponse::success(LoginResponse {
         token,
         user: UserResponse::from(&user),
-    }))
+    })))
 }
 
 /// 登录处理
 pub async fn login_handler(
     State(state): State<AppState>,
     Json(req): Json<LoginRequest>,
-) -> Result<Json<LoginResponse>, AppError> {
+) -> Result<Json<ApiResponse<LoginResponse>>, AppError> {
     let db = get_db(&state);
 
     // Find user by email
@@ -158,24 +160,24 @@ pub async fn login_handler(
 
     tracing::info!("User logged in: {}", user.email);
 
-    Ok(Json(LoginResponse {
+    Ok(Json(ApiResponse::success(LoginResponse {
         token,
         user: UserResponse::from(&user),
-    }))
+    })))
 }
 
 /// 获取当前用户信息
 pub async fn get_profile_handler(
     State(state): State<AppState>,
     Extension(claims): Extension<Claims>,
-) -> Result<Json<UserResponse>, AppError> {
+) -> Result<Json<ApiResponse<UserResponse>>, AppError> {
     let db = get_db(&state);
 
     let user = db
         .find_user_by_id(&claims.sub)?
         .ok_or_else(|| AppError::NotFound("User not found".to_string()))?;
 
-    Ok(Json(UserResponse::from(&user)))
+    Ok(Json(ApiResponse::success(UserResponse::from(&user))))
 }
 
 /// 更新个人信息
@@ -183,7 +185,7 @@ pub async fn update_profile_handler(
     State(state): State<AppState>,
     Extension(claims): Extension<Claims>,
     Json(req): Json<UpdateProfileRequest>,
-) -> Result<Json<UserResponse>, AppError> {
+) -> Result<Json<ApiResponse<UserResponse>>, AppError> {
     let db = get_db(&state);
 
     let mut user = db
@@ -202,21 +204,21 @@ pub async fn update_profile_handler(
 
     tracing::info!("User profile updated: {}", user.email);
 
-    Ok(Json(UserResponse::from(&user)))
+    Ok(Json(ApiResponse::success(UserResponse::from(&user))))
 }
 
 /// 获取银行卡列表
 pub async fn list_cards_handler(
     State(state): State<AppState>,
     Extension(claims): Extension<Claims>,
-) -> Result<Json<Vec<BankCardResponse>>, AppError> {
+) -> Result<Json<ApiResponse<Vec<BankCardResponse>>>, AppError> {
     let db = get_db(&state);
 
     let cards = db.get_user_bank_cards(&claims.sub)?;
 
-    Ok(Json(
+    Ok(Json(ApiResponse::success(
         cards.iter().map(BankCardResponse::from).collect(),
-    ))
+    )))
 }
 
 /// 绑定银行卡
@@ -224,7 +226,7 @@ pub async fn bind_card_handler(
     State(state): State<AppState>,
     Extension(claims): Extension<Claims>,
     Json(req): Json<BindCardRequest>,
-) -> Result<Json<BankCardResponse>, AppError> {
+) -> Result<Json<ApiResponse<BankCardResponse>>, AppError> {
     // Validate card number (basic validation - should be 16-19 digits)
     let card_number = req.card_number.replace(' ', "");
     if card_number.len() < 13 || card_number.len() > 19 || !card_number.chars().all(|c| c.is_ascii_digit()) {
@@ -259,7 +261,7 @@ pub async fn bind_card_handler(
 
     tracing::info!("Bank card added for user");
 
-    Ok(Json(BankCardResponse::from(&card)))
+    Ok(Json(ApiResponse::success(BankCardResponse::from(&card))))
 }
 
 /// 删除银行卡
@@ -267,7 +269,7 @@ pub async fn delete_card_handler(
     State(state): State<AppState>,
     Extension(claims): Extension<Claims>,
     Path(card_id): Path<String>,
-) -> Result<Json<serde_json::Value>, AppError> {
+) -> Result<Json<ApiResponse<serde_json::Value>>, AppError> {
     let db = get_db(&state);
 
     let deleted = db.delete_bank_card(&card_id, &claims.sub)?;
@@ -278,7 +280,7 @@ pub async fn delete_card_handler(
 
     tracing::info!("Bank card deleted: {}", card_id);
 
-    Ok(Json(serde_json::json!({ "success": true })))
+    Ok(Json(ApiResponse::success(serde_json::json!({ "success": true }))))
 }
 
 /// 发送验证码
@@ -319,7 +321,20 @@ pub async fn send_code_handler(
 
     // 发送邮件
     if let Some(email_service) = state.email_service.as_ref() {
-        email_service.send_verification_email(&req.email, &code, &req.code_type)?;
+        match email_service.send_verification_email(&req.email, &code, &req.code_type) {
+            Ok(_) => {
+                tracing::info!("Verification email sent successfully to: {}", req.email);
+            }
+            Err(e) => {
+                // 邮件发送失败，返回 dev_code（仅用于开发环境）
+                tracing::warn!("Failed to send email: {}, returning dev_code for development", e);
+                return Ok(Json(serde_json::json!({
+                    "success": true,
+                    "message": "Verification code (dev mode)",
+                    "dev_code": code
+                })));
+            }
+        }
     } else {
         // 如果没有配置邮件服务，返回验证码（仅用于开发环境）
         tracing::warn!("Email service not configured, returning code in response (dev only)");
@@ -364,7 +379,7 @@ pub async fn verify_code_handler(
 pub async fn third_party_login_handler(
     State(state): State<AppState>,
     Json(req): Json<ThirdPartyLoginRequest>,
-) -> Result<Json<LoginResponse>, AppError> {
+) -> Result<Json<ApiResponse<LoginResponse>>, AppError> {
     let db = get_db(&state);
 
     // Get OAuth configuration
@@ -397,10 +412,10 @@ pub async fn third_party_login_handler(
 
     tracing::info!("Third party login: {} - {}", req.provider, user.email);
 
-    Ok(Json(LoginResponse {
+    Ok(Json(ApiResponse::success(LoginResponse {
         token,
         user: UserResponse::from(&user),
-    }))
+    })))
 }
 
 /// 三方绑定（绑定已有账号）
@@ -526,4 +541,86 @@ pub async fn get_oauth_url_handler(
         "url": auth_url,
         "state": state_param
     })))
+}
+
+/// 上传头像
+pub async fn upload_avatar_handler(
+    State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
+    axum::extract::Host(host): axum::extract::Host,
+    mut multipart: Multipart,
+) -> Result<Json<ApiResponse<serde_json::Value>>, AppError> {
+    // Find user first
+    let db = get_db(&state);
+    let user = db
+        .find_user_by_id(&claims.sub)?
+        .ok_or_else(|| AppError::NotFound("User not found".to_string()))?;
+    let user_email = user.email.clone();
+
+    // Get the avatar field from multipart
+    let field = match multipart.next_field().await {
+        Ok(Some(field)) => field,
+        Ok(None) => return Err(AppError::BadRequest("No file uploaded".to_string())),
+        Err(e) => return Err(AppError::BadRequest(format!("Failed to read upload: {}", e))),
+    };
+
+    let filename = field.file_name().ok_or_else(|| {
+        AppError::BadRequest("Invalid file name".to_string())
+    })?;
+
+    // Validate file extension
+    let extension = StdPath::new(filename)
+        .extension()
+        .and_then(|e| e.to_str())
+        .map(|e| e.to_lowercase())
+        .ok_or_else(|| AppError::BadRequest("Invalid file extension".to_string()))?;
+
+    if !["jpg", "jpeg", "png", "gif", "webp"].contains(&extension.as_str()) {
+        return Err(AppError::BadRequest(
+            "Only jpg, jpeg, png, gif, webp formats are allowed".to_string(),
+        ));
+    }
+
+    // Read file content
+    let bytes = field
+        .bytes()
+        .await
+        .map_err(|e| AppError::BadRequest(format!("Failed to read file: {}", e)))?;
+
+    // Check file size (max 100KB)
+    if bytes.len() > 100 * 1024 {
+        return Err(AppError::BadRequest("File size must be less than 100KB".to_string()));
+    }
+
+    // Generate unique filename
+    let user_email = user.email.clone();
+    let new_filename = format!("{}_{}.{}", user.id, Uuid::new_v4(), extension);
+    let static_path = StdPath::new("static/avatars");
+    let full_path = static_path.join(&new_filename);
+
+    // Create directory if not exists
+    if let Some(parent) = full_path.parent() {
+        std::fs::create_dir_all(parent).map_err(|e| {
+            AppError::InternalServerError(format!("Failed to create directory: {}", e))
+        })?;
+    }
+
+    // Save file
+    std::fs::write(&full_path, &bytes).map_err(|e| {
+        AppError::InternalServerError(format!("Failed to save file: {}", e))
+    })?;
+
+    // Build avatar URL (using full URL with host)
+    let avatar_url = format!("https://{}/static/avatars/{}", host, new_filename);
+
+    // Update user avatar in database
+    let mut updated_user = user;
+    updated_user.avatar = Some(avatar_url.clone());
+    db.update_user(&updated_user)?;
+
+    tracing::info!("Avatar uploaded for user: {}", user_email);
+
+    Ok(Json(ApiResponse::success(serde_json::json!({
+        "url": avatar_url
+    }))))
 }

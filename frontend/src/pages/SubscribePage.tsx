@@ -1,10 +1,17 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Check, Zap, Crown, Rocket, Loader2 } from 'lucide-react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Check, Zap, Crown, Rocket, Loader2, ArrowLeft } from 'lucide-react'
 import { getPlans, createOrder, getSubscriptionStatus } from '@/api/client'
 import type { SubscriptionPlan, SubscriptionStatusResponse, CreateOrderRequest } from '@/types/api'
 
 type PlanId = 'lite' | 'pro' | 'max'
+
+// Default plans when API fails
+const defaultPlans: SubscriptionPlan[] = [
+  { id: 'lite', name: '基础版', price: 9.9, price_display: '9.9', features: ['基础AI模型', '每日50次生成', '标准支持'] },
+  { id: 'pro', name: '专业版', price: 29.9, price_display: '29.9', features: ['全部AI模型', '每日200次生成', '优先支持', '高级功能'] },
+  { id: 'max', name: '旗舰版', price: 99, price_display: '99', features: ['全部AI模型', '无限次生成', '7x24小时支持', '企业级功能', '定制服务'] },
+]
 
 const planIcons: Record<PlanId, typeof Zap> = {
   lite: Zap,
@@ -53,10 +60,11 @@ const planNameMap: Record<PlanId, string> = {
 
 export function SubscribePage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [plans, setPlans] = useState<SubscriptionPlan[]>([])
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatusResponse | null>(null)
   const [selectedPlan, setSelectedPlan] = useState<PlanId | null>(null)
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('alipay')
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('wechat')
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -69,21 +77,9 @@ export function SubscribePage() {
       ])
       setPlans(plansData)
       setSubscriptionStatus(statusData)
-    } catch (err) {
-      const message = err instanceof Error ? err.message : '加载数据失败'
-      setError(message)
-      // 重试一次
-      try {
-        const [plansData, statusData] = await Promise.all([
-          getPlans(),
-          getSubscriptionStatus(),
-        ])
-        setPlans(plansData)
-        setSubscriptionStatus(statusData)
-        setError(null)
-      } catch {
-        // 保留原始错误
-      }
+    } catch {
+      // Use default plans when API fails
+      setPlans(defaultPlans)
     } finally {
       setLoading(false)
     }
@@ -92,6 +88,20 @@ export function SubscribePage() {
   useEffect(() => {
     loadData()
   }, [loadData])
+
+  // Initialize selected plan from URL params or default to cheapest
+  useEffect(() => {
+    if (plans.length > 0 && !selectedPlan) {
+      const planParam = searchParams.get('plan')
+      if (planParam && plans.find(p => p.id === planParam)) {
+        setSelectedPlan(planParam as PlanId)
+      } else {
+        // Default to cheapest plan
+        const cheapest = [...plans].sort((a, b) => a.price - b.price)[0]
+        setSelectedPlan(cheapest.id as PlanId)
+      }
+    }
+  }, [plans, selectedPlan, searchParams])
 
   const handleSubscribe = async () => {
     if (!selectedPlan) {
@@ -133,6 +143,17 @@ export function SubscribePage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+      {/* Back button */}
+      <div className="flex items-center mb-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 hover:bg-gray-200 rounded-lg mr-2"
+        >
+          <ArrowLeft className="w-5 h-5 text-gray-600" />
+        </button>
+        <h1 className="text-2xl font-bold text-gray-900">订阅套餐</h1>
+      </div>
+
       {/* Current subscription status */}
       {subscriptionStatus?.active && (
         <div className="mb-8 p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -151,11 +172,8 @@ export function SubscribePage() {
       )}
 
       {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          选择您的订阅套餐
-        </h1>
-        <p className="text-lg text-gray-600">
+      <div className="text-center mb-6">
+        <p className="text-gray-600">
           解锁全部功能，让代码生成更高效
         </p>
       </div>
@@ -237,18 +255,18 @@ export function SubscribePage() {
       {/* Payment method selection */}
       {selectedPlan && (
         <div className="max-w-md mx-auto">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">选择支付方式</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">选择支付方式</h3>
 
-          <div className="space-y-3 mb-6">
+          <div className="flex space-x-3 mb-4">
             {[
-              { id: 'alipay', label: '支付宝', icon: '💳' },
               { id: 'wechat', label: '微信支付', icon: '💬' },
+              { id: 'alipay', label: '支付宝', icon: '💳' },
               { id: 'yunshanfu', label: '云闪付', icon: '☁️' },
             ].map((method) => (
               <label
                 key={method.id}
                 className={`
-                  flex items-center p-4 border-2 rounded-lg cursor-pointer transition-colors
+                  flex-1 flex items-center justify-center p-3 border-2 rounded-lg cursor-pointer transition-colors
                   ${selectedPaymentMethod === method.id
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-300'
@@ -263,11 +281,8 @@ export function SubscribePage() {
                   onChange={(e) => setSelectedPaymentMethod(e.target.value)}
                   className="sr-only"
                 />
-                <span className="text-2xl mr-3">{method.icon}</span>
-                <span className="font-medium text-gray-900">{method.label}</span>
-                {selectedPaymentMethod === method.id && (
-                  <Check className="w-5 h-5 text-blue-500 ml-auto" />
-                )}
+                <span className="text-xl mr-2">{method.icon}</span>
+                <span className="font-medium text-gray-900 text-sm">{method.label}</span>
               </label>
             ))}
           </div>

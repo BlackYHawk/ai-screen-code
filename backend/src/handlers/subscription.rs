@@ -1,15 +1,18 @@
 use crate::models::{
-    CreateOrderRequest, CreateOrderResponse, Order, OrderHistoryResponse, OrderStatus,
+    ApiResponse, CreateOrderRequest, CreateOrderResponse, Order, OrderHistoryResponse, OrderStatus,
     PaymentCallbackRequest, PaymentMethod, Subscription, SubscriptionPlan,
     SubscriptionPlanResponse, SubscriptionStatus, SubscriptionStatusResponse,
 };
 use crate::state::AppState;
 use axum::{
-    extract::{Path, State},
+    extract::{Path, State, Extension},
     Json,
 };
 use chrono::Utc;
 use uuid::Uuid;
+use crate::handlers::auth::Claims;
+use jsonwebtoken::decode;
+use std::sync::Arc;
 
 /// 获取订阅计划列表
 pub async fn get_plans_handler() -> Json<Vec<SubscriptionPlanResponse>> {
@@ -73,18 +76,19 @@ pub async fn create_order_handler(
 /// 获取当前订阅状态
 pub async fn get_subscription_status_handler(
     State(state): State<AppState>,
-) -> Json<SubscriptionStatusResponse> {
-    let user_id = "demo_user"; // TODO: 从认证中获取
+    Extension(claims): Extension<Claims>,
+) -> Json<ApiResponse<SubscriptionStatusResponse>> {
+    let user_id = &claims.sub;
 
     match state.db.get_active_subscription(user_id) {
-        Ok(Some(sub)) => Json(SubscriptionStatusResponse::from(&sub)),
-        _ => Json(SubscriptionStatusResponse {
+        Ok(Some(sub)) => Json(ApiResponse::success(SubscriptionStatusResponse::from(&sub))),
+        _ => Json(ApiResponse::success(SubscriptionStatusResponse {
             active: false,
             plan: None,
             status: None,
             start_date: None,
             end_date: None,
-        }),
+        })),
     }
 }
 
@@ -185,12 +189,15 @@ pub async fn get_order_status_handler(
 }
 
 /// 获取订单历史
-pub async fn get_order_history_handler(State(state): State<AppState>) -> Json<Vec<OrderHistoryResponse>> {
-    let user_id = "demo_user"; // TODO: 从认证中获取
+pub async fn get_order_history_handler(
+    State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
+) -> Json<ApiResponse<Vec<OrderHistoryResponse>>> {
+    let user_id = &claims.sub;
 
     match state.db.get_user_orders(user_id) {
-        Ok(orders) => Json(orders.iter().map(|o| OrderHistoryResponse::from(o)).collect()),
-        _ => Json(Vec::new()),
+        Ok(orders) => Json(ApiResponse::success(orders.iter().map(|o| OrderHistoryResponse::from(o)).collect())),
+        _ => Json(ApiResponse::success(Vec::new())),
     }
 }
 

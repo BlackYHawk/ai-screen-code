@@ -9,6 +9,8 @@ import {
   RegisterPage,
   ProfilePage,
   CardsPage,
+  OrdersPage,
+  SubscribePage,
   ForgotPasswordPage,
   OAuthCallbackPage,
 } from './pages'
@@ -72,6 +74,22 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <CardsPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/orders',
+    element: (
+      <ProtectedRoute>
+        <OrdersPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/subscribe',
+    element: (
+      <ProtectedRoute>
+        <SubscribePage />
       </ProtectedRoute>
     ),
   },
