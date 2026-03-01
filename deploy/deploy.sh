@@ -6,8 +6,8 @@
 set -e
 
 ENV=${1:-production}
-REGISTRY=${REGISTRY:-registry.cn-hangzhou.aliyuncs.com}
-NAMESPACE=${NAMESPACE:-your-namespace}
+REGISTRY=${DOCKER_REGISTRY:-docker.io}
+NAMESPACE=${NAMESPACE:-blackyawk}
 
 echo "========================================="
 echo "AI Screen Code 部署脚本"

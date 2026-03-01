@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+# Load environment variables from .env file
+if [ -f "$(dirname "$0")/../.env" ]; then
+  set -a
+  source "$(dirname "$0")/../.env"
+  set +a
+fi
+
 # Configuration
 REGISTRY=${DOCKER_REGISTRY:-docker.io}
 IMAGE_PREFIX=${IMAGE_PREFIX:-your-dockerhub-username/ai-screen-code}
