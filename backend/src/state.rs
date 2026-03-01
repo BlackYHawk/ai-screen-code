@@ -30,6 +30,36 @@ pub struct AppState {
 }
 
 impl AppState {
+    /// Create a new AppState for testing with a temporary database
+    /// Returns a tuple of (state, temp_dir) to keep the temp directory alive
+    #[doc(hidden)]
+    pub fn new_test() -> (Self, tempfile::TempDir) {
+        use crate::database::Database;
+        use std::fs;
+
+        // Create a temporary directory for the test database
+        let temp_dir = tempfile::TempDir::new().expect("Failed to create temp dir");
+        let db_path = temp_dir.path().join("test.db");
+
+        // Ensure parent directory exists
+        if let Some(parent) = db_path.parent() {
+            fs::create_dir_all(parent).ok();
+        }
+
+        // Create database with custom path
+        let db = Arc::new(Database::new_with_path(&db_path).expect("Failed to create test database"));
+
+        let state = Self {
+            config: Config::default(),
+            history: Arc::new(RwLock::new(Vec::new())),
+            runtime_config: Arc::new(RwLock::new(RuntimeConfig::default())),
+            db,
+            email_service: Arc::new(None),
+        };
+
+        (state, temp_dir)
+    }
+
     pub fn new(config: Config) -> Self {
         // 从配置文件初始化运行时配置
         let mut runtime_config = RuntimeConfig::default();

@@ -12,6 +12,31 @@ pub struct Config {
     pub oauth: Option<OAuthConfig>,
 }
 
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            server: ServerConfig {
+                host: "0.0.0.0".to_string(),
+                port: 3000,
+            },
+            models: ModelsConfig::default(),
+            logging: LoggingConfig {
+                level: "info".to_string(),
+                format: "json".to_string(),
+            },
+            cors: CorsConfig {
+                allowed_origins: vec!["http://localhost:1420".to_string()],
+                allowed_methods: vec!["GET".to_string(), "POST".to_string(), "PUT".to_string(), "DELETE".to_string()],
+                allowed_headers: vec!["Content-Type".to_string(), "Authorization".to_string()],
+                allow_credentials: true,
+            },
+            jwt_secret: "test_jwt_secret_key_12345".to_string(),
+            email: None,
+            oauth: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ServerConfig {
     pub host: String,

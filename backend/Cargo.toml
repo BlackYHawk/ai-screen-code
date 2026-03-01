@@ -5,11 +5,11 @@ edition = "2024"
 
 [dependencies]
 # Web framework
-axum = "0.7"
+axum = { version = "0.7", features = ["multipart"] }
 tokio = { version = "1", features = ["full"] }
 tokio-stream = "0.1"
 futures = "0.3"
-tower = "0.4"
+tower = { version = "0.4", features = ["util"] }
 tower-http = { version = "0.5", features = ["cors", "fs"] }
 
 # HTTP client
@@ -52,8 +52,8 @@ rusqlite = { version = "0.31", features = ["bundled"] }
 dirs = "5"
 
 # Email
-lettre = { version = "0.11", default-features = false, features = ["smtp-transport", "builder", "tokio1-native-tls"] }
-native-tls = "0.2"
+lettre = { version = "0.11", default-features = false, features = ["smtp-transport", "builder", "tokio1-rustls", "rustls-native-certs", "ring"] }
+rustls-native-certs = "0.7"
 
 # Random
 rand = "0.8"
