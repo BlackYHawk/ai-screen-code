@@ -6,6 +6,45 @@ import { ImageUploadWithPreview } from '@/components/upload'
 import { Sparkles } from 'lucide-react'
 import type { AIModel, ProgrammingLanguage } from '@/types/api'
 
+// Image compression utility
+async function compressImage(file: File, maxWidth = 1920, quality = 0.8): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let { width, height } = img
+
+        // Scale down if larger than maxWidth
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width
+          width = maxWidth
+        }
+
+        canvas.width = width
+        canvas.height = height
+
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          reject(new Error('Failed to get canvas context'))
+          return
+        }
+
+        // Draw and compress
+        ctx.drawImage(img, 0, 0, width, height)
+        const compressedBase64 = canvas.toDataURL('image/jpeg', quality).split(',')[1]
+
+        resolve(compressedBase64)
+      }
+      img.onerror = () => reject(new Error('Failed to load image'))
+      img.src = e.target?.result as string
+    }
+    reader.onerror = () => reject(new Error('Failed to read file'))
+    reader.readAsDataURL(file)
+  })
+}
+
 const modelOptions = [
   { value: 'qwen', label: 'Qwen (阿里云)' },
   { value: 'minimax', label: 'MiniMax' },
@@ -24,17 +63,34 @@ export function HomePage() {
   const navigate = useNavigate()
   const { currentFile, setCurrentFile, selectedModel, setSelectedModel, selectedLanguage, setSelectedLanguage } = useAppStore()
 
-  const handleFileUpload = (file: File) => {
-    const reader = new FileReader()
-    reader.onload = () => {
+  const handleFileUpload = async (file: File) => {
+    try {
+      // Compress image before storing
+      const compressedBase64 = await compressImage(file)
+
+      // Create preview URL
+      const previewUrl = `data:image/jpeg;base64,${compressedBase64}`
+
       setCurrentFile({
         id: crypto.randomUUID(),
         file,
-        preview: reader.result as string,
-        base64: (reader.result as string).split(',')[1],
+        preview: previewUrl,
+        base64: compressedBase64,
       })
+    } catch (error) {
+      console.error('Image compression failed:', error)
+      // Fall back to original file
+      const reader = new FileReader()
+      reader.onload = () => {
+        setCurrentFile({
+          id: crypto.randomUUID(),
+          file,
+          preview: reader.result as string,
+          base64: (reader.result as string).split(',')[1],
+        })
+      }
+      reader.readAsDataURL(file)
     }
-    reader.readAsDataURL(file)
   }
 
   const handleRemoveFile = () => {

@@ -71,55 +71,95 @@ export const generateCode = async (request: GenerateRequest): Promise<GenerateRe
   return response.data.data!
 }
 
-// Generate code with streaming
+// Generate code with streaming using SSE
 export const generateCodeStream = async (
   request: GenerateRequest,
   onChunk: (chunk: string) => void,
   onProgress?: (progress: number) => void
 ): Promise<GenerateResponse> => {
-  const response = await apiClient.post<ApiResponse<GenerateResponse>>(
-    '/generate',
-    { ...request, stream: true },
-    {
-      responseType: 'stream',
-      onDownloadProgress: (progressEvent: AxiosProgressEvent) => {
-        if (onProgress && progressEvent.total) {
-          const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100)
-          onProgress(progress)
-        }
-      },
-    }
-  )
+  const baseURL = apiClient.defaults.baseURL || ''
 
-  return new Promise((resolve, reject) => {
-    let fullCode = ''
-    const stream = response.data as unknown as {
-      on: (event: string, callback: (chunk: Buffer) => void) => void
-    }
-
-    stream.on('data', (chunk: Buffer) => {
-      const text = chunk.toString()
-      fullCode += text
-      onChunk(text)
-    })
-
-    stream.on('end', () => {
-      try {
-        const data = JSON.parse(fullCode)
-        if (data.success) {
-          resolve(data.data)
-        } else {
-          reject(new Error(data.error || 'Failed to generate code'))
-        }
-      } catch {
-        reject(new Error('Invalid response format'))
-      }
-    })
-
-    stream.on('error', (err: unknown) => {
-      reject(err instanceof Error ? err : new Error('Stream error'))
-    })
+  return fetch(`${baseURL}/generate/stream`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
   })
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then(err => {
+          throw new Error(err.error || `HTTP error: ${response.status}`)
+        })
+      }
+
+      const reader = response.body?.getReader()
+      if (!reader) {
+        throw new Error('Response body is not readable')
+      }
+
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let fullCode = ''
+
+      return new Promise<GenerateResponse>((resolve, reject) => {
+        const readStream = () => {
+          reader.read().then(({ done, value }) => {
+            if (done) {
+              // Process remaining buffer
+              if (buffer) {
+                const lines = buffer.split('\n')
+                for (const line of lines) {
+                  if (line.startsWith('data: ')) {
+                    const data = line.slice(6)
+                    if (data && data !== '[DONE]') {
+                      fullCode += data
+                      onChunk(data)
+                    }
+                  }
+                }
+              }
+
+              resolve({
+                success: true,
+                code: fullCode,
+                language: request.language,
+                model: request.model,
+                id: '',
+              })
+              return
+            }
+
+            buffer += decoder.decode(value, { stream: true })
+
+            // Process complete lines
+            const lines = buffer.split('\n')
+            buffer = lines.pop() || ''
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6)
+                if (data && data !== '[DONE]') {
+                  fullCode += data
+                  onChunk(data)
+                  if (onProgress) {
+                    onProgress(Math.min(fullCode.length * 2, 90))
+                  }
+                }
+              }
+            }
+
+            readStream()
+          })
+        }
+
+        readStream()
+      })
+    })
+    .catch((error) => {
+      console.error('Stream error:', error)
+      throw error
+    })
 }
 
 // Validate API key

@@ -81,12 +81,8 @@ export function GeneratePage() {
     }
 
     const apiKey = config.api_keys[selectedModel]
-    if (!apiKey) {
-      toast.error(`请先在设置页面配置 ${selectedModel.toUpperCase()} 的 API Key`)
-      navigate('/settings')
-      return
-    }
 
+    // Reset state for new generation
     setIsGenerating(true)
     setShowResult(false)
     updateProgress('uploading', 10)
@@ -94,26 +90,24 @@ export function GeneratePage() {
     try {
       updateProgress('analyzing', 30)
 
-      // Simulate progress updates
-      const progressInterval = setInterval(() => {
-        setGenerationStep((prev) => {
-          if (prev === 'uploading') return 'analyzing'
-          if (prev === 'analyzing') return 'generating'
-          return prev
-        })
-      }, 800)
+      // Use non-streaming API for code generation
+      const response = await generateCode(
+        {
+          image: currentFile.base64,
+          model: selectedModel,
+          language: selectedLanguage,
+          ...(apiKey ? { api_key: apiKey } : {}),
+          custom_base_url: config.custom_base_urls[selectedModel] || undefined,
+        }
+      )
 
-      const response = await generateCode({
-        image: currentFile.base64,
-        model: selectedModel,
-        language: selectedLanguage,
-        api_key: apiKey,
-        custom_base_url: config.custom_base_urls[selectedModel] || undefined,
-      })
-
-      clearInterval(progressInterval)
       updateProgress('complete', 100)
-      setGenerateResult(response)
+
+      // Store final result
+      setGenerateResult({
+        ...response,
+        code: response.code,
+      })
       setShowResult(true)
       toast.success('代码生成成功!')
     } catch (error) {
@@ -161,6 +155,9 @@ export function GeneratePage() {
   }, [])
 
   const result = useAppStore.getState().generateResult
+
+  // Determine which code to display
+  const displayCode = result?.code || ''
 
   return (
     <Layout>
@@ -325,18 +322,21 @@ export function GeneratePage() {
 
           {/* Right Panel: Code Display */}
           <div className="lg:col-span-2 bg-white p-6 overflow-hidden">
+            {/* Show result */}
             {showResult && result ? (
               <div className="h-full flex flex-col">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">生成的代码</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {isGenerating ? '正在生成...' : '生成的代码'}
+                  </h2>
                   <span className="text-sm text-gray-500">
-                    {languageNames[result.language]}
+                    {languageNames[result?.language || selectedLanguage]}
                   </span>
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <CodeEditor
-                    code={result.code}
-                    language={result.language}
+                    code={displayCode}
+                    language={result?.language || selectedLanguage}
                     readOnly={true}
                     showToolbar={true}
                     height="100%"
