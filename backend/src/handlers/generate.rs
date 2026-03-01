@@ -10,6 +10,7 @@ use std::sync::Arc;
 use tokio_stream::Stream;
 use validator::Validate;
 use crate::error::{AppError, AppResult};
+use crate::models::response::ApiResponse;
 use crate::models::{GenerateRequest, GenerateResponse};
 use crate::services::ai_service::AiService;
 use crate::services::glm_service::GlmService;
@@ -19,25 +20,28 @@ use crate::services::minimax_service::MiniMaxService;
 use crate::services::qwen_service::QwenService;
 use crate::state::AppState;
 
-fn get_ai_service(model: &str) -> Arc<dyn AiService + Send + Sync> {
+fn get_ai_service(model: &str, model_name: &str) -> Arc<dyn AiService + Send + Sync> {
     match model.to_lowercase().as_str() {
-        "qwen" => Arc::new(QwenService::new()),
-        "minimax" => Arc::new(MiniMaxService::new()),
-        "kimi" => Arc::new(KimiService::new()),
-        "glm" => Arc::new(GlmService::new()),
-        _ => Arc::new(QwenService::new()),
+        "qwen" => Arc::new(QwenService::new(model_name)),
+        "minimax" => Arc::new(MiniMaxService::new(model_name)),
+        "kimi" => Arc::new(KimiService::new(model_name)),
+        "glm" => Arc::new(GlmService::new(model_name)),
+        _ => Arc::new(QwenService::new(model_name)),
     }
 }
 
 pub async fn generate_code_handler(
     State(state): State<AppState>,
     Json(payload): Json<GenerateRequest>,
-) -> AppResult<Json<GenerateResponse>> {
+) -> AppResult<Json<ApiResponse<GenerateResponse>>> {
     // Validate request
     payload.validate().map_err(|e: validator::ValidationErrors| AppError::ValidationError(e.to_string()))?;
 
-    // Get AI service
-    let ai_service = get_ai_service(&payload.model);
+    // Get configured model name from runtime config
+    let model_name = state.get_model_name(&payload.model).await;
+
+    // Get AI service with configured model
+    let ai_service = get_ai_service(&payload.model, &model_name);
 
     // Get API key from runtime config or request
     let api_key = if let Some(ref req_key) = payload.api_key {
@@ -91,13 +95,12 @@ pub async fn generate_code_handler(
 
     tracing::info!("Code generated successfully, id: {}", saved_history.id);
 
-    Ok(Json(GenerateResponse {
-        success: true,
+    Ok(Json(ApiResponse::success(GenerateResponse {
         code,
         language: payload.language,
         model: payload.model,
         id: saved_history.id,
-}))
+    })))
 }
 
 /// Streaming code generation handler using SSE
@@ -108,8 +111,11 @@ pub async fn generate_code_streaming_handler(
     // Validate request
     payload.validate().map_err(|e: validator::ValidationErrors| AppError::ValidationError(e.to_string()))?;
 
-    // Get AI service
-    let ai_service = get_ai_service(&payload.model);
+    // Get configured model name from runtime config
+    let model_name = state.get_model_name(&payload.model).await;
+
+    // Get AI service with configured model
+    let ai_service = get_ai_service(&payload.model, &model_name);
 
     // Get API key from runtime config or request
     let api_key = if let Some(ref req_key) = payload.api_key {

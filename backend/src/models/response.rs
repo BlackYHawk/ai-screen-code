@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GenerateResponse {
-    pub success: bool,
     pub code: String,
     pub language: String,
     pub model: String,

@@ -6,18 +6,12 @@ RUN apt-get update && apt-get install -y pkg-config libssl-dev
 
 WORKDIR /app
 
-# Copy dependency files first for better caching
+# Copy source code
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
 
-# Build dependencies first (for caching)
-RUN mkdir src && echo "fn main() {}" > src/main.rs
+# Build release
 RUN cargo build --release
-RUN rm -rf src/main.rs
-
-# Copy source code and build
-COPY src ./src
-RUN touch src/main.rs && cargo build --release
 
 # Runtime stage
 FROM debian:bookworm-slim

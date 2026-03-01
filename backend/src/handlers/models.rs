@@ -1,6 +1,7 @@
 use axum::{extract::State, Json};
 use validator::Validate;
 use crate::error::{AppError, AppResult};
+use crate::models::response::ApiResponse;
 use crate::models::{ModelInfo, ModelsResponse, ValidateModelRequest, ValidateModelResponse};
 use crate::services::ai_service::AiService;
 use crate::services::glm_service::GlmService;
@@ -9,19 +10,19 @@ use crate::services::minimax_service::MiniMaxService;
 use crate::services::qwen_service::QwenService;
 use crate::state::AppState;
 
-fn get_ai_service(model: &str) -> Box<dyn AiService> {
+fn get_ai_service(model: &str, model_name: &str) -> Box<dyn AiService> {
     match model.to_lowercase().as_str() {
-        "qwen" => Box::new(QwenService::new()),
-        "minimax" => Box::new(MiniMaxService::new()),
-        "kimi" => Box::new(KimiService::new()),
-        "glm" => Box::new(GlmService::new()),
-        _ => Box::new(QwenService::new()),
+        "qwen" => Box::new(QwenService::new(model_name)),
+        "minimax" => Box::new(MiniMaxService::new(model_name)),
+        "kimi" => Box::new(KimiService::new(model_name)),
+        "glm" => Box::new(GlmService::new(model_name)),
+        _ => Box::new(QwenService::new(model_name)),
     }
 }
 
 pub async fn list_models_handler(
     State(state): State<AppState>,
-) -> AppResult<Json<ModelsResponse>> {
+) -> AppResult<Json<ApiResponse<ModelsResponse>>> {
     let config = &state.config;
 
     let models = vec![
@@ -55,18 +56,18 @@ pub async fn list_models_handler(
         },
     ];
 
-    Ok(Json(ModelsResponse { success: true, models }))
+    Ok(Json(ApiResponse::success(ModelsResponse { success: true, models })))
 }
 
 pub async fn validate_model_handler(
     State(state): State<AppState>,
     Json(payload): Json<ValidateModelRequest>,
-) -> AppResult<Json<ValidateModelResponse>> {
+) -> AppResult<Json<ApiResponse<ValidateModelResponse>>> {
     payload
         .validate()
         .map_err(|e: validator::ValidationErrors| AppError::ValidationError(e.to_string()))?;
 
-    let ai_service = get_ai_service(&payload.model);
+    let ai_service = get_ai_service(&payload.model, "");
 
     // 获取base_url
     let base_url = payload.base_url.clone().unwrap_or_else(|| {
@@ -98,9 +99,9 @@ pub async fn validate_model_handler(
         }
     };
 
-    Ok(Json(ValidateModelResponse {
+    Ok(Json(ApiResponse::success(ValidateModelResponse {
         success: true,
         valid: is_valid,
         message,
-    }))
+    })))
 }

@@ -1,11 +1,12 @@
 use axum::{extract::State, Json};
 use crate::error::AppResult;
+use crate::models::response::ApiResponse;
 use crate::models::{SettingsResponse, UpdateSettingsRequest, ModelRuntimeConfig};
 use crate::state::AppState;
 
 pub async fn get_settings_handler(
     State(state): State<AppState>,
-) -> AppResult<Json<SettingsResponse>> {
+) -> AppResult<Json<ApiResponse<SettingsResponse>>> {
     let config = &state.config;
     let runtime = state.runtime_config.read().await;
 
@@ -30,18 +31,18 @@ pub async fn get_settings_handler(
         .cloned()
         .unwrap_or_else(|| config.models.qwen.default_model.clone());
 
-    Ok(Json(SettingsResponse {
+    Ok(Json(ApiResponse::success(SettingsResponse {
         success: true,
         default_model,
         default_language: "react".to_string(),
         configured_models,
-    }))
+    })))
 }
 
 pub async fn update_settings_handler(
     State(state): State<AppState>,
     Json(payload): Json<UpdateSettingsRequest>,
-) -> AppResult<Json<SettingsResponse>> {
+) -> AppResult<Json<ApiResponse<SettingsResponse>>> {
     // 更新运行时配置
     if let Some(api_keys) = payload.api_keys {
         for (model, api_key) in api_keys {
@@ -68,19 +69,19 @@ pub async fn update_settings_handler(
         }
     }
 
-    Ok(Json(SettingsResponse {
+    Ok(Json(ApiResponse::success(SettingsResponse {
         success: true,
         default_model,
         default_language: "react".to_string(),
         configured_models,
-    }))
+    })))
 }
 
 /// 获取指定模型的运行时配置
 pub async fn get_model_config_handler(
     State(state): State<AppState>,
     axum::extract::Path(model): axum::extract::Path<String>,
-) -> AppResult<Json<ModelRuntimeConfig>> {
+) -> AppResult<Json<ApiResponse<ModelRuntimeConfig>>> {
     let runtime = state.runtime_config.read().await;
 
     let api_key = runtime.api_keys.get(&model).cloned().unwrap_or_default();
@@ -103,11 +104,11 @@ pub async fn get_model_config_handler(
         }
     });
 
-    Ok(Json(ModelRuntimeConfig {
+    Ok(Json(ApiResponse::success(ModelRuntimeConfig {
         api_key,
         base_url,
         default_model,
-    }))
+    })))
 }
 
 /// 更新指定模型的运行时配置
@@ -115,7 +116,7 @@ pub async fn update_model_config_handler(
     State(state): State<AppState>,
     axum::extract::Path(model): axum::extract::Path<String>,
     Json(payload): Json<ModelRuntimeConfig>,
-) -> AppResult<Json<ModelRuntimeConfig>> {
+) -> AppResult<Json<ApiResponse<ModelRuntimeConfig>>> {
     let api_key = payload.api_key.clone();
     let base_url = payload.base_url.clone();
     let default_model = payload.default_model.clone();
@@ -130,5 +131,5 @@ pub async fn update_model_config_handler(
     tracing::info!("Updated model config: {} - API Key: {}, Base URL: {}, Model: {}",
         model, api_key, base_url, default_model);
 
-    Ok(Json(payload))
+    Ok(Json(ApiResponse::success(payload)))
 }
