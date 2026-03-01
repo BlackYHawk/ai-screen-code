@@ -11,8 +11,6 @@ use axum::{
 use chrono::Utc;
 use uuid::Uuid;
 use crate::handlers::auth::Claims;
-use jsonwebtoken::decode;
-use std::sync::Arc;
 
 /// 获取订阅计划列表
 pub async fn get_plans_handler() -> Json<Vec<SubscriptionPlanResponse>> {
@@ -23,26 +21,32 @@ pub async fn get_plans_handler() -> Json<Vec<SubscriptionPlanResponse>> {
 /// 创建订单
 pub async fn create_order_handler(
     State(state): State<AppState>,
+    Extension(claims): Extension<Claims>,
     Json(req): Json<CreateOrderRequest>,
-) -> Result<Json<CreateOrderResponse>, String> {
+) -> Json<ApiResponse<CreateOrderResponse>> {
     // 验证请求参数
-    req.validate().map_err(|e| e.to_string())?;
+    if let Err(e) = req.validate() {
+        return Json(ApiResponse::error(e.to_string()));
+    }
 
     // 验证套餐
     let plans = SubscriptionPlan::get_plans();
-    let plan = plans
-        .iter()
-        .find(|p| p.id == req.plan)
-        .ok_or_else(|| "Invalid plan".to_string())?;
+    let plan = match plans.iter().find(|p| p.id == req.plan) {
+        Some(p) => p,
+        None => return Json(ApiResponse::error("Invalid plan".to_string())),
+    };
 
     // 验证支付方式
-    let payment_method: PaymentMethod = req.payment_method.parse().map_err(|e: String| e)?;
+    let payment_method: PaymentMethod = match req.payment_method.parse() {
+        Ok(pm) => pm,
+        Err(_) => return Json(ApiResponse::error("Invalid payment method".to_string())),
+    };
 
     // 生成订单ID
     let order_id = Uuid::new_v4().to_string();
 
-    // 使用临时用户ID（生产环境应从认证获取）
-    let user_id = "demo_user".to_string();
+    // 从认证获取用户ID
+    let user_id = claims.sub.clone();
 
     // 创建订单
     let order = Order {
@@ -57,10 +61,10 @@ pub async fn create_order_handler(
     };
 
     // 保存订单到数据库
-    state
-        .db
-        .create_order(&order)
-        .map_err(|e| format!("Failed to create order: {}", e))?;
+    if let Err(e) = state.db.create_order(&order) {
+        tracing::error!("Failed to create order: {}", e);
+        return Json(ApiResponse::error(format!("Failed to create order: {}", e)));
+    }
 
     tracing::info!("Created order: {} for plan: {}", order.id, req.plan);
 
@@ -70,7 +74,7 @@ pub async fn create_order_handler(
     response.qr_code = Some(generate_mock_qr_code(&order_id, &payment_method));
     response.payment_url = Some(format!("/payment/{}", order_id));
 
-    Ok(Json(response))
+    Json(ApiResponse::success(response))
 }
 
 /// 获取当前订阅状态
