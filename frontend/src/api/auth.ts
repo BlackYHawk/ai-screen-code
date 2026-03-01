@@ -218,13 +218,18 @@ const authClient = {
       body: JSON.stringify({ email, code_type: codeType }),
     })
 
-    const result: ApiResponse<{ success: boolean; message: string; dev_code?: string }> = await response.json()
+    const result = await response.json()
 
     if (!result.success) {
       throw new Error(result.error || 'Failed to send verification code')
     }
 
-    return result.data!
+    // 后端返回扁平格式，不是 ApiResponse 格式
+    return {
+      success: result.success,
+      message: result.message,
+      dev_code: result.dev_code,
+    }
   },
 
   // Verify code
@@ -237,7 +242,7 @@ const authClient = {
       body: JSON.stringify({ email, code, code_type: codeType }),
     })
 
-    const result: ApiResponse<{ success: boolean; message: string }> = await response.json()
+    const result = await response.json()
 
     if (!result.success) {
       throw new Error(result.error || 'Invalid verification code')

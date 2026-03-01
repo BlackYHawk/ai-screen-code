@@ -96,6 +96,13 @@ impl Database {
             [],
         )?;
 
+        // 复合索引：加速用户有效订阅查询
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_subscriptions_user_status_end
+             ON subscriptions(user_id, status, end_date)",
+            [],
+        )?;
+
         // 订单表
         conn.execute(
             "CREATE TABLE IF NOT EXISTS orders (
@@ -114,6 +121,19 @@ impl Database {
 
         conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id)",
+            [],
+        )?;
+
+        // 索引：加速订单状态查询
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)",
+            [],
+        )?;
+
+        // 复合索引：加速用户订单查询
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_orders_user_created
+             ON orders(user_id, created_at DESC)",
             [],
         )?;
 

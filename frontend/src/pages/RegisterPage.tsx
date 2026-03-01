@@ -173,7 +173,7 @@ export function RegisterPage() {
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value)}
                     className="py-2"
-                    disabled={isLoading || !codeSent}
+                    disabled={isLoading || isSendingCode}
                   />
                   <Button
                     type="button"
