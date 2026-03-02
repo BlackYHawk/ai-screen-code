@@ -42,11 +42,13 @@ impl QqOAuthService {
 
     /// Generate authorization URL
     pub fn generate_authorization_url(&self, state: &str) -> String {
-        let params = [("response_type", "code".to_string()),
+        let params = [
+            ("response_type", "code".to_string()),
             ("client_id", self.config.client_id.clone()),
             ("redirect_uri", self.config.redirect_uri.clone()),
             ("scope", self.config.scope.clone()),
-            ("state", state.to_string())];
+            ("state", state.to_string()),
+        ];
 
         let query_string = params
             .iter()

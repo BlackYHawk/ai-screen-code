@@ -175,7 +175,8 @@ impl AiService for KimiService {
 
         let code = kimi_response
             .choices
-            .first().map(|choice| choice.message.content.clone())
+            .first()
+            .map(|choice| choice.message.content.clone())
             .ok_or_else(|| AppError::AiServiceError("No response content".to_string()))?;
 
         Ok(code)

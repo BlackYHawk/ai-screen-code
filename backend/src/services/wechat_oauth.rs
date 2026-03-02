@@ -42,11 +42,13 @@ impl WechatOAuthService {
 
     /// Generate authorization URL
     pub fn generate_authorization_url(&self, state: &str) -> String {
-        let params = [("appid", self.config.client_id.clone()),
+        let params = [
+            ("appid", self.config.client_id.clone()),
             ("redirect_uri", self.config.redirect_uri.clone()),
             ("response_type", "code".to_string()),
             ("scope", self.config.scope.clone()),
-            ("state", state.to_string())];
+            ("state", state.to_string()),
+        ];
 
         let query_string = params
             .iter()
@@ -116,13 +118,14 @@ impl WechatOAuthService {
         })?;
 
         if let Some(errcode) = user_info.errcode
-            && errcode != 0 {
-                return Err(AppError::InternalServerError(format!(
-                    "WeChat API error: {} - {}",
-                    errcode,
-                    user_info.errmsg.unwrap_or_default()
-                )));
-            }
+            && errcode != 0
+        {
+            return Err(AppError::InternalServerError(format!(
+                "WeChat API error: {} - {}",
+                errcode,
+                user_info.errmsg.unwrap_or_default()
+            )));
+        }
 
         let avatar = user_info.headimgurl;
 
