@@ -27,7 +27,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
-export const router = createBrowserRouter([
+const routes = [
   {
     path: '/',
     element: <HomePage />,
@@ -112,4 +112,8 @@ export const router = createBrowserRouter([
     path: '/privacy',
     element: <PrivacyPage />,
   },
-])
+]
+
+export const router = createBrowserRouter(routes, {
+  basename: import.meta.env.VITE_BASE || '/',
+})
