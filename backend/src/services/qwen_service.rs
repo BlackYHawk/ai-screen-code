@@ -181,7 +181,8 @@ impl AiService for QwenService {
         let code = qwen_response
             .output
             .choices
-            .first().map(|choice| choice.message.content.clone())
+            .first()
+            .map(|choice| choice.message.content.clone())
             .ok_or_else(|| AppError::AiServiceError("No response content".to_string()))?;
 
         Ok(code)

@@ -48,11 +48,13 @@ impl DouyinOAuthService {
 
     /// Generate authorization URL
     pub fn generate_authorization_url(&self, state: &str) -> String {
-        let params = [("client_key", self.config.client_id.clone()),
+        let params = [
+            ("client_key", self.config.client_id.clone()),
             ("redirect_uri", self.config.redirect_uri.clone()),
             ("scope", self.config.scope.clone()),
             ("state", state.to_string()),
-            ("response_type", "code".to_string())];
+            ("response_type", "code".to_string()),
+        ];
 
         let query_string = params
             .iter()
@@ -87,12 +89,13 @@ impl DouyinOAuthService {
         })?;
 
         if let Some(message) = token_response.message
-            && message != "success" {
-                return Err(AppError::InternalServerError(format!(
-                    "Douyin API error: {}",
-                    message
-                )));
-            }
+            && message != "success"
+        {
+            return Err(AppError::InternalServerError(format!(
+                "Douyin API error: {}",
+                message
+            )));
+        }
 
         token_response
             .data
@@ -125,12 +128,13 @@ impl DouyinOAuthService {
         })?;
 
         if let Some(message) = user_info_response.message
-            && message != "success" {
-                return Err(AppError::InternalServerError(format!(
-                    "Douyin API error: {}",
-                    message
-                )));
-            }
+            && message != "success"
+        {
+            return Err(AppError::InternalServerError(format!(
+                "Douyin API error: {}",
+                message
+            )));
+        }
 
         let user_data = user_info_response.data.ok_or_else(|| {
             AppError::InternalServerError("No data in user info response".to_string())

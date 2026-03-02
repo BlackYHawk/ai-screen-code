@@ -207,10 +207,7 @@ pub async fn get_order_history_handler(
 
     match state.db.get_user_orders(user_id) {
         Ok(orders) => Json(ApiResponse::success(
-            orders
-                .iter()
-                .map(OrderHistoryResponse::from)
-                .collect(),
+            orders.iter().map(OrderHistoryResponse::from).collect(),
         )),
         _ => Json(ApiResponse::success(Vec::new())),
     }
