@@ -85,9 +85,10 @@ jobs:
       - name: Set image tags
         id: tags
         run: |
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           SHA_SHORT=${GITHUB_SHA:0:7}
-          echo "backend=ghcr.io/${{ github.repository }}-backend:latest,$SHA_SHORT" >> $GITHUB_OUTPUT
-          echo "frontend=ghcr.io/${{ github.repository }}-frontend:latest,$SHA_SHORT" >> $GITHUB_OUTPUT
+          echo "backend=ghcr.io/${REPO}-backend:latest,${SHA_SHORT}" >> $GITHUB_OUTPUT
+          echo "frontend=ghcr.io/${REPO}-frontend:latest,${SHA_SHORT}" >> $GITHUB_OUTPUT
 
       - name: Build and push backend
         uses: docker/build-push-action@v5
