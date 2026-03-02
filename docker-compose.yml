@@ -1,18 +1,18 @@
-version: '3.8'
-
-# Usage:
-# 1. Build and push images: ./deploy/build-and-push.sh
-# 2. Pull and run: docker-compose pull && docker-compose up -d
+# AI Screen Code - Docker Compose
 #
-# Or use specific version:
-#   export IMAGE_TAG=20260301
-#   docker-compose pull && docker-compose up -d
+# Build and push images: docker buildx build --platform linux/amd64,linux/arm64 ...
+# Or use GitHub Actions CI/CD
+#
+# Usage:
+#   docker-compose up -d
+#
+# Or with custom tag:
+#   IMAGE_TAG=20260301 docker-compose up -d
 
 services:
   # Backend API service
   backend:
-    # Use pre-built image from registry (change to your registry)
-    image: ${IMAGE_PREFIX:-your-dockerhub-username/ai-screen-code}-backend:${IMAGE_TAG:-latest}
+    image: ${IMAGE_PREFIX:-ghcr.io/blackyahawk/ai-screen-code}:${IMAGE_TAG:-latest}
     container_name: ai-screen-backend
     restart: unless-stopped
     ports:
@@ -55,6 +55,9 @@ services:
       - KIMI_API_KEY=${KIMI_API_KEY:-}
       - GLM_API_KEY=${GLM_API_KEY:-}
 
+      # Default AI Model
+      - DEFAULT_MODEL=${DEFAULT_MODEL:-qwen}
+
     networks:
       - ai-screen-network
     healthcheck:
@@ -66,8 +69,7 @@ services:
 
   # Frontend service
   frontend:
-    # Use pre-built image from registry (change to your registry)
-    image: ${IMAGE_PREFIX:-your-dockerhub-username/ai-screen-code}-frontend:${IMAGE_TAG:-latest}
+    image: ${IMAGE_PREFIX:-ghcr.io/blackyahawk/ai-screen-code}:${IMAGE_TAG:-latest}-frontend
     container_name: ai-screen-frontend
     restart: unless-stopped
     ports:
