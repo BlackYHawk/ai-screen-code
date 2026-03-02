@@ -82,15 +82,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=ref,event=branch
-            type=sha,prefix=
-            type=raw,value=latest,enable={{is_default_branch}}
+      - name: Set image tags
+        id: tags
+        run: |
+          SHA_SHORT=${GITHUB_SHA:0:7}
+          echo "backend=ghcr.io/${{ github.repository }}-backend:latest,$SHA_SHORT" >> $GITHUB_OUTPUT
+          echo "frontend=ghcr.io/${{ github.repository }}-frontend:latest,$SHA_SHORT" >> $GITHUB_OUTPUT
 
       - name: Build and push backend
         uses: docker/build-push-action@v5
@@ -98,8 +95,7 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.tags.outputs.backend }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -109,7 +105,6 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}-frontend
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.tags.outputs.frontend }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
