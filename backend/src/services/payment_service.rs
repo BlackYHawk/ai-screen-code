@@ -26,7 +26,7 @@ impl PaymentService {
             "{}_{}_{}",
             prefix,
             Utc::now().timestamp_millis(),
-            Self::generate_order_id()[..8].to_string()
+            &Self::generate_order_id()[..8]
         )
     }
 

@@ -596,7 +596,7 @@ pub async fn upload_avatar_handler(
     let user = db
         .find_user_by_id(&claims.sub)?
         .ok_or_else(|| AppError::NotFound("User not found".to_string()))?;
-    let user_email = user.email.clone();
+    let _user_email = user.email.clone();
 
     // Get the avatar field from multipart
     let field = match multipart.next_field().await {
