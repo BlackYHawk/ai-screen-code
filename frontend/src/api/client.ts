@@ -47,7 +47,7 @@ if (typeof window !== 'undefined') {
 }
 
 const apiClient = axios.create({
-  baseURL: '/api/v1',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
   timeout: 300000, // 5 minutes for code generation
   headers: {
     'Content-Type': 'application/json',
