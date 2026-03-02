@@ -199,73 +199,61 @@ fn substitute_env_vars(content: &str) -> String {
 /// 应用环境变量覆盖
 fn apply_env_overrides(mut config: Config) -> Config {
     // Qwen
-    if let Ok(api_key) = std::env::var("QWEN_API_KEY") {
-        if !api_key.is_empty() {
+    if let Ok(api_key) = std::env::var("QWEN_API_KEY")
+        && !api_key.is_empty() {
             config.models.qwen.api_key = api_key;
         }
-    }
-    if let Ok(base_url) = std::env::var("QWEN_BASE_URL") {
-        if !base_url.is_empty() {
+    if let Ok(base_url) = std::env::var("QWEN_BASE_URL")
+        && !base_url.is_empty() {
             config.models.qwen.base_url = base_url;
         }
-    }
-    if let Ok(model) = std::env::var("QWEN_MODEL") {
-        if !model.is_empty() {
+    if let Ok(model) = std::env::var("QWEN_MODEL")
+        && !model.is_empty() {
             config.models.qwen.default_model = model;
         }
-    }
 
     // MiniMax
-    if let Ok(api_key) = std::env::var("MINIMAX_API_KEY") {
-        if !api_key.is_empty() {
+    if let Ok(api_key) = std::env::var("MINIMAX_API_KEY")
+        && !api_key.is_empty() {
             config.models.minimax.api_key = api_key;
         }
-    }
-    if let Ok(base_url) = std::env::var("MINIMAX_BASE_URL") {
-        if !base_url.is_empty() {
+    if let Ok(base_url) = std::env::var("MINIMAX_BASE_URL")
+        && !base_url.is_empty() {
             config.models.minimax.base_url = base_url;
         }
-    }
-    if let Ok(model) = std::env::var("MINIMAX_MODEL") {
-        if !model.is_empty() {
+    if let Ok(model) = std::env::var("MINIMAX_MODEL")
+        && !model.is_empty() {
             config.models.minimax.default_model = model;
         }
-    }
 
     // Kimi
-    if let Ok(api_key) = std::env::var("KIMI_API_KEY") {
-        if !api_key.is_empty() {
+    if let Ok(api_key) = std::env::var("KIMI_API_KEY")
+        && !api_key.is_empty() {
             config.models.kimi.api_key = api_key;
             tracing::info!("Loaded KIMI_API_KEY from environment");
         }
-    }
-    if let Ok(base_url) = std::env::var("KIMI_BASE_URL") {
-        if !base_url.is_empty() {
+    if let Ok(base_url) = std::env::var("KIMI_BASE_URL")
+        && !base_url.is_empty() {
             config.models.kimi.base_url = base_url;
         }
-    }
-    if let Ok(model) = std::env::var("KIMI_MODEL") {
-        if !model.is_empty() {
+    if let Ok(model) = std::env::var("KIMI_MODEL")
+        && !model.is_empty() {
             config.models.kimi.default_model = model;
         }
-    }
 
     // GLM
-    if let Ok(api_key) = std::env::var("GLM_API_KEY") {
-        if !api_key.is_empty() {
+    if let Ok(api_key) = std::env::var("GLM_API_KEY")
+        && !api_key.is_empty() {
             config.models.glm.api_key = api_key;
         }
-    }
-    if let Ok(base_url) = std::env::var("GLM_BASE_URL") {
-        if !base_url.is_empty() {
+    if let Ok(base_url) = std::env::var("GLM_BASE_URL")
+        && !base_url.is_empty() {
             config.models.glm.base_url = base_url;
         }
-    }
-    if let Ok(model) = std::env::var("GLM_MODEL") {
-        if !model.is_empty() {
+    if let Ok(model) = std::env::var("GLM_MODEL")
+        && !model.is_empty() {
             config.models.glm.default_model = model;
         }
-    }
 
     // Email/SMTP Configuration
     if let Some(email_config) = config.email.take() {

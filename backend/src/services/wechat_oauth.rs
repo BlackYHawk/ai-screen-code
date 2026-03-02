@@ -42,13 +42,11 @@ impl WechatOAuthService {
 
     /// Generate authorization URL
     pub fn generate_authorization_url(&self, state: &str) -> String {
-        let params = vec![
-            ("appid", self.config.client_id.clone()),
+        let params = [("appid", self.config.client_id.clone()),
             ("redirect_uri", self.config.redirect_uri.clone()),
             ("response_type", "code".to_string()),
             ("scope", self.config.scope.clone()),
-            ("state", state.to_string()),
-        ];
+            ("state", state.to_string())];
 
         let query_string = params
             .iter()
@@ -117,15 +115,14 @@ impl WechatOAuthService {
             AppError::InternalServerError(format!("Failed to parse user info response: {}", e))
         })?;
 
-        if let Some(errcode) = user_info.errcode {
-            if errcode != 0 {
+        if let Some(errcode) = user_info.errcode
+            && errcode != 0 {
                 return Err(AppError::InternalServerError(format!(
                     "WeChat API error: {} - {}",
                     errcode,
                     user_info.errmsg.unwrap_or_default()
                 )));
             }
-        }
 
         let avatar = user_info.headimgurl;
 

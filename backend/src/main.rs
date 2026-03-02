@@ -1,5 +1,4 @@
 // 加载 .env 文件中的环境变量
-use dotenv::dotenv;
 
 use ai_screen_code::config::Config;
 use ai_screen_code::handlers::{
@@ -16,7 +15,7 @@ use ai_screen_code::handlers::{
 use ai_screen_code::middleware::auth_middleware;
 use ai_screen_code::state::AppState;
 use axum::{
-    Router, ServiceExt, middleware,
+    Router, middleware,
     routing::{delete, get, post, put},
 };
 use std::net::SocketAddr;

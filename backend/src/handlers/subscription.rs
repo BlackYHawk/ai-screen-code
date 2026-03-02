@@ -16,7 +16,7 @@ use uuid::Uuid;
 /// 获取订阅计划列表
 pub async fn get_plans_handler() -> Json<Vec<SubscriptionPlanResponse>> {
     let plans = SubscriptionPlan::get_plans();
-    Json(plans.into_iter().map(|p| p.into()).collect())
+    Json(plans.iter().map(|p| p.into()).collect())
 }
 
 /// 创建订单
@@ -209,7 +209,7 @@ pub async fn get_order_history_handler(
         Ok(orders) => Json(ApiResponse::success(
             orders
                 .iter()
-                .map(|o| OrderHistoryResponse::from(o))
+                .map(OrderHistoryResponse::from)
                 .collect(),
         )),
         _ => Json(ApiResponse::success(Vec::new())),
