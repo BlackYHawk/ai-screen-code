@@ -39,7 +39,7 @@ impl Serialize for SubscriptionError {
 pub struct SubscriptionPlan {
     pub id: String,
     pub name: String, // lite/pro/max
-    pub price: i32,  // 价格（分）
+    pub price: i32,   // 价格（分）
     pub features: Vec<String>,
 }
 
@@ -205,7 +205,9 @@ impl CreateOrderRequest {
         }
         // 验证支付方式
         if !["alipay", "wechat", "yunshanfu"].contains(&self.payment_method.as_str()) {
-            return Err(SubscriptionError::InvalidPaymentMethod(self.payment_method.clone()));
+            return Err(SubscriptionError::InvalidPaymentMethod(
+                self.payment_method.clone(),
+            ));
         }
         Ok(())
     }
@@ -223,10 +225,14 @@ impl PaymentCallbackRequest {
     /// 验证请求
     pub fn validate(&self) -> Result<(), SubscriptionError> {
         if self.order_id.is_empty() {
-            return Err(SubscriptionError::OrderNotFound("order_id is empty".to_string()));
+            return Err(SubscriptionError::OrderNotFound(
+                "order_id is empty".to_string(),
+            ));
         }
         if self.trade_no.is_empty() {
-            return Err(SubscriptionError::OrderNotFound("trade_no is empty".to_string()));
+            return Err(SubscriptionError::OrderNotFound(
+                "trade_no is empty".to_string(),
+            ));
         }
         if !["paid", "pending", "failed"].contains(&self.status.as_str()) {
             return Err(SubscriptionError::InvalidPaymentMethod(self.status.clone()));
@@ -301,8 +307,8 @@ pub struct CreateOrderResponse {
     pub amount: i32,
     pub amount_display: String,
     pub payment_method: String,
-    pub status: String, // 订单状态: pending, paid, failed
-    pub qr_code: Option<String>, // 支付二维码（模拟）
+    pub status: String,              // 订单状态: pending, paid, failed
+    pub qr_code: Option<String>,     // 支付二维码（模拟）
     pub payment_url: Option<String>, // 支付链接
 }
 

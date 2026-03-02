@@ -1,10 +1,10 @@
 use crate::config::EmailConfig;
 use crate::error::AppError;
-use lettre::message::{Mailbox, Message, header, MultiPart, SinglePart};
-use lettre::transport::smtp::SmtpTransport;
-use lettre::transport::smtp::client::TlsParameters;
-use lettre::transport::smtp::authentication::Credentials;
 use lettre::Transport;
+use lettre::message::{Mailbox, Message, MultiPart, SinglePart, header};
+use lettre::transport::smtp::SmtpTransport;
+use lettre::transport::smtp::authentication::Credentials;
+use lettre::transport::smtp::client::TlsParameters;
 
 pub struct EmailService {
     config: EmailConfig,
@@ -26,7 +26,9 @@ impl EmailService {
 
         // 尝试 DNS 解析
         tracing::info!("Attempting DNS lookup for {}", smtp_host);
-        if let Ok(addrs) = std::net::ToSocketAddrs::to_socket_addrs(&(smtp_host.as_str(), smtp_port)) {
+        if let Ok(addrs) =
+            std::net::ToSocketAddrs::to_socket_addrs(&(smtp_host.as_str(), smtp_port))
+        {
             for addr in addrs {
                 tracing::info!("Resolved {} to {}", smtp_host, addr);
             }
@@ -60,7 +62,12 @@ impl EmailService {
     }
 
     /// 构建邮件
-    fn build_message(&self, to_email: &str, subject: &str, html_body: &str) -> Result<Message, AppError> {
+    fn build_message(
+        &self,
+        to_email: &str,
+        subject: &str,
+        html_body: &str,
+    ) -> Result<Message, AppError> {
         let from_email = &self.config.from_email;
         let from_name = &self.config.from_name;
 
@@ -194,10 +201,25 @@ impl EmailService {
     }
 
     /// 发送验证码邮件
-    pub fn send_verification_email(&self, to_email: &str, code: &str, code_type: &str) -> Result<(), AppError> {
-        tracing::info!("Sending verification email to: {} with code: {} (type: {})", to_email, code, code_type);
-        tracing::info!("SMTP config: host={}, port={}, user={}, from={}",
-            self.config.smtp_host, self.config.smtp_port, self.config.smtp_user, self.config.from_email);
+    pub fn send_verification_email(
+        &self,
+        to_email: &str,
+        code: &str,
+        code_type: &str,
+    ) -> Result<(), AppError> {
+        tracing::info!(
+            "Sending verification email to: {} with code: {} (type: {})",
+            to_email,
+            code,
+            code_type
+        );
+        tracing::info!(
+            "SMTP config: host={}, port={}, user={}, from={}",
+            self.config.smtp_host,
+            self.config.smtp_port,
+            self.config.smtp_user,
+            self.config.from_email
+        );
 
         // 构建 SMTP 传输
         let transport = self.build_transport()?;

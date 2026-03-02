@@ -75,16 +75,17 @@ impl QqOAuthService {
             .query(&params)
             .send()
             .await
-            .map_err(|e| AppError::InternalServerError(format!("Failed to exchange code: {}", e)))?;
+            .map_err(|e| {
+                AppError::InternalServerError(format!("Failed to exchange code: {}", e))
+            })?;
 
-        let token_response: QqAccessTokenResponse = serde_urlencoded::from_str(
-            &response.text().await.map_err(|e| {
+        let token_response: QqAccessTokenResponse =
+            serde_urlencoded::from_str(&response.text().await.map_err(|e| {
                 AppError::InternalServerError(format!("Failed to read response: {}", e))
-            })?,
-        )
-        .map_err(|e| {
-            AppError::InternalServerError(format!("Failed to parse token response: {}", e))
-        })?;
+            })?)
+            .map_err(|e| {
+                AppError::InternalServerError(format!("Failed to parse token response: {}", e))
+            })?;
 
         Ok(token_response.access_token)
     }
@@ -99,14 +100,13 @@ impl QqOAuthService {
             .await
             .map_err(|e| AppError::InternalServerError(format!("Failed to get openid: {}", e)))?;
 
-        let openid_response: QqOpenIdResponse = serde_json::from_str(
-            &response.text().await.map_err(|e| {
+        let openid_response: QqOpenIdResponse =
+            serde_json::from_str(&response.text().await.map_err(|e| {
                 AppError::InternalServerError(format!("Failed to read response: {}", e))
-            })?,
-        )
-        .map_err(|e| {
-            AppError::InternalServerError(format!("Failed to parse openid response: {}", e))
-        })?;
+            })?)
+            .map_err(|e| {
+                AppError::InternalServerError(format!("Failed to parse openid response: {}", e))
+            })?;
 
         Ok(openid_response.openid)
     }
@@ -125,7 +125,9 @@ impl QqOAuthService {
             ])
             .send()
             .await
-            .map_err(|e| AppError::InternalServerError(format!("Failed to get user info: {}", e)))?;
+            .map_err(|e| {
+                AppError::InternalServerError(format!("Failed to get user info: {}", e))
+            })?;
 
         let user_info: QqUserInfoResponse = response.json().await.map_err(|e| {
             AppError::InternalServerError(format!("Failed to parse user info response: {}", e))
@@ -138,9 +140,7 @@ impl QqOAuthService {
             )));
         }
 
-        let avatar = user_info
-            .figureurl_qq_2
-            .or(user_info.figureurl);
+        let avatar = user_info.figureurl_qq_2.or(user_info.figureurl);
 
         Ok(OAuthUserInfo {
             openid,

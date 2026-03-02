@@ -26,7 +26,12 @@ impl Default for Config {
             },
             cors: CorsConfig {
                 allowed_origins: vec!["http://localhost:1420".to_string()],
-                allowed_methods: vec!["GET".to_string(), "POST".to_string(), "PUT".to_string(), "DELETE".to_string()],
+                allowed_methods: vec![
+                    "GET".to_string(),
+                    "POST".to_string(),
+                    "PUT".to_string(),
+                    "DELETE".to_string(),
+                ],
                 allowed_headers: vec!["Content-Type".to_string(), "Authorization".to_string()],
                 allow_credentials: true,
             },
@@ -170,7 +175,10 @@ fn substitute_env_vars(content: &str) -> String {
 
             // 解析变量名和默认值
             let (var_name, default_value) = if let Some(pos) = var_part.find(":-") {
-                (var_part[..pos].to_string(), Some(var_part[pos + 2..].to_string()))
+                (
+                    var_part[..pos].to_string(),
+                    Some(var_part[pos + 2..].to_string()),
+                )
             } else {
                 (var_part.to_string(), None)
             };
@@ -267,7 +275,8 @@ fn apply_env_overrides(mut config: Config) -> Config {
             .parse()
             .unwrap_or(email_config.smtp_port);
         let smtp_user = std::env::var("SMTP_USER").unwrap_or(email_config.smtp_user.clone());
-        let smtp_password = std::env::var("SMTP_PASSWORD").unwrap_or(email_config.smtp_password.clone());
+        let smtp_password =
+            std::env::var("SMTP_PASSWORD").unwrap_or(email_config.smtp_password.clone());
         let from_email = std::env::var("SMTP_FROM").unwrap_or(email_config.from_email.clone());
         let from_name = std::env::var("SMTP_FROM_NAME").unwrap_or(email_config.from_name.clone());
 

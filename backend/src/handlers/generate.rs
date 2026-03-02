@@ -1,14 +1,3 @@
-use axum::{
-    extract::State,
-    response::sse::{Event, Sse},
-    Json,
-};
-use futures::stream::{self};
-use std::convert::Infallible;
-use std::pin::Pin;
-use std::sync::Arc;
-use tokio_stream::Stream;
-use validator::Validate;
 use crate::error::{AppError, AppResult};
 use crate::models::response::ApiResponse;
 use crate::models::{GenerateRequest, GenerateResponse};
@@ -19,6 +8,17 @@ use crate::services::kimi_service::KimiService;
 use crate::services::minimax_service::MiniMaxService;
 use crate::services::qwen_service::QwenService;
 use crate::state::AppState;
+use axum::{
+    Json,
+    extract::State,
+    response::sse::{Event, Sse},
+};
+use futures::stream::{self};
+use std::convert::Infallible;
+use std::pin::Pin;
+use std::sync::Arc;
+use tokio_stream::Stream;
+use validator::Validate;
 
 fn get_ai_service(model: &str, model_name: &str) -> Arc<dyn AiService + Send + Sync> {
     match model.to_lowercase().as_str() {
@@ -35,7 +35,9 @@ pub async fn generate_code_handler(
     Json(payload): Json<GenerateRequest>,
 ) -> AppResult<Json<ApiResponse<GenerateResponse>>> {
     // Validate request
-    payload.validate().map_err(|e: validator::ValidationErrors| AppError::ValidationError(e.to_string()))?;
+    payload
+        .validate()
+        .map_err(|e: validator::ValidationErrors| AppError::ValidationError(e.to_string()))?;
 
     // Get configured model name from runtime config
     let model_name = state.get_model_name(&payload.model).await;
@@ -62,9 +64,10 @@ pub async fn generate_code_handler(
     }
 
     // Get base URL from request or runtime config
-    let base_url = payload.base_url.clone().unwrap_or_else(|| {
-        futures::executor::block_on(state.get_base_url(&payload.model))
-    });
+    let base_url = payload
+        .base_url
+        .clone()
+        .unwrap_or_else(|| futures::executor::block_on(state.get_base_url(&payload.model)));
 
     tracing::info!(
         "Generating code with model: {}, language: {}",
@@ -74,12 +77,7 @@ pub async fn generate_code_handler(
 
     // Generate code
     let code = ai_service
-        .generate_code(
-            &payload.image,
-            &payload.language,
-            &api_key,
-            Some(&base_url),
-        )
+        .generate_code(&payload.image, &payload.language, &api_key, Some(&base_url))
         .await?;
 
     // Create history record
@@ -109,7 +107,9 @@ pub async fn generate_code_streaming_handler(
     Json(payload): Json<GenerateRequest>,
 ) -> AppResult<Sse<impl Stream<Item = Result<Event, Infallible>>>> {
     // Validate request
-    payload.validate().map_err(|e: validator::ValidationErrors| AppError::ValidationError(e.to_string()))?;
+    payload
+        .validate()
+        .map_err(|e: validator::ValidationErrors| AppError::ValidationError(e.to_string()))?;
 
     // Get configured model name from runtime config
     let model_name = state.get_model_name(&payload.model).await;
@@ -136,9 +136,10 @@ pub async fn generate_code_streaming_handler(
     }
 
     // Get base URL from request or runtime config
-    let base_url = payload.base_url.clone().unwrap_or_else(|| {
-        futures::executor::block_on(state.get_base_url(&payload.model))
-    });
+    let base_url = payload
+        .base_url
+        .clone()
+        .unwrap_or_else(|| futures::executor::block_on(state.get_base_url(&payload.model)));
 
     tracing::info!(
         "Streaming code generation with model: {}, language: {}",
@@ -151,12 +152,8 @@ pub async fn generate_code_streaming_handler(
     let language = payload.language.clone();
 
     // Get streaming response (non-async function)
-    let mut stream = ai_service.generate_code_streaming(
-        &image,
-        &language,
-        &api_key,
-        Some(&base_url),
-    );
+    let mut stream =
+        ai_service.generate_code_streaming(&image, &language, &api_key, Some(&base_url));
 
     // Convert to SSE stream
     let mut full_code = String::new();

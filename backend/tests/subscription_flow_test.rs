@@ -1,8 +1,8 @@
 use axum::{
+    Router,
     body::Body,
     middleware::from_fn_with_state,
     routing::{get, post},
-    Router,
 };
 use serde_json::json;
 use std::sync::Arc;
@@ -10,13 +10,13 @@ use tower::ServiceExt;
 use uuid::Uuid;
 
 use ai_screen_code::handlers::subscription::{
-    create_order_handler, get_order_history_handler, get_order_status_handler,
-    get_plans_handler, get_subscription_status_handler, payment_callback_handler,
+    create_order_handler, get_order_history_handler, get_order_status_handler, get_plans_handler,
+    get_subscription_status_handler, payment_callback_handler,
 };
 use ai_screen_code::middleware::auth_middleware;
 use ai_screen_code::models::{
-    CreateOrderRequest, Order, OrderStatus, PaymentCallbackRequest, PaymentMethod,
-    Subscription, SubscriptionStatus, User,
+    CreateOrderRequest, Order, OrderStatus, PaymentCallbackRequest, PaymentMethod, Subscription,
+    SubscriptionStatus, User,
 };
 use ai_screen_code::state::AppState;
 use chrono::Utc;
@@ -45,7 +45,7 @@ fn create_test_user(state: &AppState, user_id: &str, email: &str, nickname: &str
 
 /// Generate a valid JWT token for testing
 fn generate_test_token(user_id: &str) -> String {
-    use jsonwebtoken::{encode, EncodingKey, Header};
+    use jsonwebtoken::{EncodingKey, Header, encode};
 
     let claims = ai_screen_code::handlers::auth::Claims::new(
         user_id.to_string(),
@@ -69,9 +69,7 @@ async fn make_request(
     auth_token: Option<&str>,
     body: Option<&[u8]>,
 ) -> (u16, String) {
-    let mut req_builder = axum::http::Request::builder()
-        .uri(uri)
-        .method(method);
+    let mut req_builder = axum::http::Request::builder().uri(uri).method(method);
 
     if let Some(token) = auth_token {
         req_builder = req_builder.header("Authorization", format!("Bearer {}", token));
@@ -88,7 +86,9 @@ async fn make_request(
 
     let response = app.clone().oneshot(req).await.unwrap();
     let status = response.status().as_u16();
-    let body = axum::body::to_bytes(response.into_body(), 1000000).await.unwrap();
+    let body = axum::body::to_bytes(response.into_body(), 1000000)
+        .await
+        .unwrap();
     let body_str = String::from_utf8_lossy(&body).to_string();
     (status, body_str)
 }
@@ -110,7 +110,14 @@ async fn test_get_plans() {
         .route("/api/subscription/plans", get(get_plans_handler))
         .with_state(state);
 
-    let (status, body) = make_request(&app, axum::http::Method::GET, "/api/subscription/plans", None, None).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::GET,
+        "/api/subscription/plans",
+        None,
+        None,
+    )
+    .await;
 
     assert_eq!(status, 200);
     let result = parse_json(&body);
@@ -143,7 +150,14 @@ async fn test_create_order_success_alipay() {
     };
     let body = serde_json::to_vec(&request).unwrap();
 
-    let (status, body) = make_request(&app, axum::http::Method::POST, "/api/orders", Some(&token), Some(&body)).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::POST,
+        "/api/orders",
+        Some(&token),
+        Some(&body),
+    )
+    .await;
 
     assert_eq!(status, 200);
     let result = parse_json(&body);
@@ -172,7 +186,14 @@ async fn test_create_order_invalid_plan() {
     };
     let body = serde_json::to_vec(&request).unwrap();
 
-    let (status, body) = make_request(&app, axum::http::Method::POST, "/api/orders", Some(&token), Some(&body)).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::POST,
+        "/api/orders",
+        Some(&token),
+        Some(&body),
+    )
+    .await;
 
     assert_eq!(status, 200);
     let result = parse_json(&body);
@@ -199,7 +220,14 @@ async fn test_create_order_invalid_payment_method() {
     };
     let body = serde_json::to_vec(&request).unwrap();
 
-    let (status, body) = make_request(&app, axum::http::Method::POST, "/api/orders", Some(&token), Some(&body)).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::POST,
+        "/api/orders",
+        Some(&token),
+        Some(&body),
+    )
+    .await;
 
     assert_eq!(status, 200);
     let result = parse_json(&body);
@@ -228,7 +256,10 @@ async fn test_payment_callback_success() {
         created_at: Utc::now(),
     };
 
-    state.db.create_order(&order).expect("Failed to create order");
+    state
+        .db
+        .create_order(&order)
+        .expect("Failed to create order");
 
     let app = Router::new()
         .route("/api/payment/callback", post(payment_callback_handler))
@@ -241,7 +272,14 @@ async fn test_payment_callback_success() {
     };
     let body = serde_json::to_vec(&callback).unwrap();
 
-    let (status, body) = make_request(&app, axum::http::Method::POST, "/api/payment/callback", None, Some(&body)).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::POST,
+        "/api/payment/callback",
+        None,
+        Some(&body),
+    )
+    .await;
 
     assert_eq!(status, 200);
     let result = parse_json(&body);
@@ -270,7 +308,14 @@ async fn test_payment_callback_order_not_found() {
     };
     let body = serde_json::to_vec(&callback).unwrap();
 
-    let (status, body) = make_request(&app, axum::http::Method::POST, "/api/payment/callback", None, Some(&body)).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::POST,
+        "/api/payment/callback",
+        None,
+        Some(&body),
+    )
+    .await;
 
     // Should return error - handler returns plain text when not found
     assert!(body.contains("not found") || status != 200);
@@ -297,13 +342,23 @@ async fn test_get_order_status() {
         created_at: Utc::now(),
     };
 
-    state.db.create_order(&order).expect("Failed to create order");
+    state
+        .db
+        .create_order(&order)
+        .expect("Failed to create order");
 
     let app = Router::new()
         .route("/api/orders/:order_id", get(get_order_status_handler))
         .with_state(state);
 
-    let (status, body) = make_request(&app, axum::http::Method::GET, &format!("/api/orders/{}", order_id), None, None).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::GET,
+        &format!("/api/orders/{}", order_id),
+        None,
+        None,
+    )
+    .await;
 
     assert_eq!(status, 200);
     let result = parse_json(&body);
@@ -324,13 +379,23 @@ async fn test_get_subscription_status_no_subscription() {
 
     let jwt_secret = Arc::new(TEST_JWT_SECRET.to_string());
     let app = Router::new()
-        .route("/api/subscription/status", get(get_subscription_status_handler))
+        .route(
+            "/api/subscription/status",
+            get(get_subscription_status_handler),
+        )
         .layer(from_fn_with_state(jwt_secret, auth_middleware))
         .with_state(state);
 
     let token = generate_test_token(user_id);
 
-    let (status, body) = make_request(&app, axum::http::Method::GET, "/api/subscription/status", Some(&token), None).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::GET,
+        "/api/subscription/status",
+        Some(&token),
+        None,
+    )
+    .await;
 
     assert_eq!(status, 200);
     let result = parse_json(&body);
@@ -363,13 +428,23 @@ async fn test_get_subscription_status_with_active() {
 
     let jwt_secret = Arc::new(TEST_JWT_SECRET.to_string());
     let app = Router::new()
-        .route("/api/subscription/status", get(get_subscription_status_handler))
+        .route(
+            "/api/subscription/status",
+            get(get_subscription_status_handler),
+        )
         .layer(from_fn_with_state(jwt_secret, auth_middleware))
         .with_state(state);
 
     let token = generate_test_token(user_id);
 
-    let (status, body) = make_request(&app, axum::http::Method::GET, "/api/subscription/status", Some(&token), None).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::GET,
+        "/api/subscription/status",
+        Some(&token),
+        None,
+    )
+    .await;
 
     assert_eq!(status, 200);
     let result = parse_json(&body);
@@ -392,15 +467,34 @@ async fn test_get_order_history() {
         let order = Order {
             id: Uuid::new_v4().to_string(),
             user_id: user_id.to_string(),
-            plan: if i % 2 == 0 { "pro".to_string() } else { "lite".to_string() },
+            plan: if i % 2 == 0 {
+                "pro".to_string()
+            } else {
+                "lite".to_string()
+            },
             amount: if i % 2 == 0 { 3000 } else { 1000 },
-            payment_method: if i % 2 == 0 { PaymentMethod::Alipay } else { PaymentMethod::Wechat },
-            status: if i == 0 { OrderStatus::Paid } else { OrderStatus::Pending },
-            trade_no: if i == 0 { Some("trade_1".to_string()) } else { None },
+            payment_method: if i % 2 == 0 {
+                PaymentMethod::Alipay
+            } else {
+                PaymentMethod::Wechat
+            },
+            status: if i == 0 {
+                OrderStatus::Paid
+            } else {
+                OrderStatus::Pending
+            },
+            trade_no: if i == 0 {
+                Some("trade_1".to_string())
+            } else {
+                None
+            },
             created_at: Utc::now(),
         };
 
-        state.db.create_order(&order).expect("Failed to create order");
+        state
+            .db
+            .create_order(&order)
+            .expect("Failed to create order");
     }
 
     let jwt_secret = Arc::new(TEST_JWT_SECRET.to_string());
@@ -411,7 +505,14 @@ async fn test_get_order_history() {
 
     let token = generate_test_token(user_id);
 
-    let (status, body) = make_request(&app, axum::http::Method::GET, "/api/orders/history", Some(&token), None).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::GET,
+        "/api/orders/history",
+        Some(&token),
+        None,
+    )
+    .await;
 
     assert_eq!(status, 200);
     let result = parse_json(&body);
@@ -434,7 +535,10 @@ async fn test_full_payment_flow_alipay() {
         .route("/api/orders", post(create_order_handler))
         .route("/api/orders/:order_id", get(get_order_status_handler))
         .route("/api/payment/callback", post(payment_callback_handler))
-        .route("/api/subscription/status", get(get_subscription_status_handler))
+        .route(
+            "/api/subscription/status",
+            get(get_subscription_status_handler),
+        )
         .layer(from_fn_with_state(jwt_secret, auth_middleware))
         .with_state(state.clone());
 
@@ -447,13 +551,27 @@ async fn test_full_payment_flow_alipay() {
     };
     let body = serde_json::to_vec(&request).unwrap();
 
-    let (status, body) = make_request(&app, axum::http::Method::POST, "/api/orders", Some(&token), Some(&body)).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::POST,
+        "/api/orders",
+        Some(&token),
+        Some(&body),
+    )
+    .await;
     assert_eq!(status, 200);
     let result = parse_json(&body);
     let order_id = result["data"]["order_id"].as_str().unwrap().to_string();
 
     // Step 2: Get order status (should be pending)
-    let (status, body) = make_request(&app, axum::http::Method::GET, &format!("/api/orders/{}", order_id), Some(&token), None).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::GET,
+        &format!("/api/orders/{}", order_id),
+        Some(&token),
+        None,
+    )
+    .await;
     let result = parse_json(&body);
     assert_eq!(result["data"]["status"], "pending");
 
@@ -469,13 +587,27 @@ async fn test_full_payment_flow_alipay() {
     };
     let body = serde_json::to_vec(&callback).unwrap();
 
-    let (status, body) = make_request(&callback_app, axum::http::Method::POST, "/api/payment/callback", None, Some(&body)).await;
+    let (status, body) = make_request(
+        &callback_app,
+        axum::http::Method::POST,
+        "/api/payment/callback",
+        None,
+        Some(&body),
+    )
+    .await;
     assert_eq!(status, 200);
     let result = parse_json(&body);
     assert!(result["success"].as_bool().unwrap_or(false));
 
     // Step 4: Get subscription status (should be active)
-    let (status, body) = make_request(&app, axum::http::Method::GET, "/api/subscription/status", Some(&token), None).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::GET,
+        "/api/subscription/status",
+        Some(&token),
+        None,
+    )
+    .await;
     let result = parse_json(&body);
     assert!(result["data"]["active"].as_bool().unwrap_or(false));
     assert_eq!(result["data"]["plan"], "pro");
@@ -508,7 +640,10 @@ async fn test_subscription_renewal() {
     let app = Router::new()
         .route("/api/orders", post(create_order_handler))
         .route("/api/payment/callback", post(payment_callback_handler))
-        .route("/api/subscription/status", get(get_subscription_status_handler))
+        .route(
+            "/api/subscription/status",
+            get(get_subscription_status_handler),
+        )
         .layer(from_fn_with_state(jwt_secret, auth_middleware))
         .with_state(state.clone());
 
@@ -521,7 +656,14 @@ async fn test_subscription_renewal() {
     };
     let body = serde_json::to_vec(&request).unwrap();
 
-    let (status, body) = make_request(&app, axum::http::Method::POST, "/api/orders", Some(&token), Some(&body)).await;
+    let (status, body) = make_request(
+        &app,
+        axum::http::Method::POST,
+        "/api/orders",
+        Some(&token),
+        Some(&body),
+    )
+    .await;
     assert_eq!(status, 200);
     let result = parse_json(&body);
     let order_id = result["data"]["order_id"].as_str().unwrap().to_string();
@@ -538,7 +680,14 @@ async fn test_subscription_renewal() {
     };
     let body = serde_json::to_vec(&callback).unwrap();
 
-    make_request(&callback_app, axum::http::Method::POST, "/api/payment/callback", None, Some(&body)).await;
+    make_request(
+        &callback_app,
+        axum::http::Method::POST,
+        "/api/payment/callback",
+        None,
+        Some(&body),
+    )
+    .await;
 
     // Verify subscription is upgraded - need a fresh state reference
     // This is a limitation - the subscription was created in the old state

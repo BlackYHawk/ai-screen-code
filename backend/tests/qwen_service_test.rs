@@ -1,5 +1,5 @@
-use ai_screen_code::services::qwen_service::QwenService;
 use ai_screen_code::services::ai_service::AiService;
+use ai_screen_code::services::qwen_service::QwenService;
 
 mod qwen_service_tests {
     use super::*;
@@ -31,7 +31,12 @@ mod qwen_service_tests {
         // Test with an invalid URL to trigger network error
         let service = QwenService::new("qwen-vl-max");
         let result = service
-            .generate_code("test-image-base64", "react", "test-api-key", Some("http://invalid:99999"))
+            .generate_code(
+                "test-image-base64",
+                "react",
+                "test-api-key",
+                Some("http://invalid:99999"),
+            )
             .await;
 
         // Should fail due to network error
@@ -46,7 +51,12 @@ mod qwen_service_tests {
 
         for lang in ["react", "vue", "swift", "kotlin", "python"] {
             let result = service
-                .generate_code("test-image-base64", lang, "test-api-key", Some("http://invalid:99999"))
+                .generate_code(
+                    "test-image-base64",
+                    lang,
+                    "test-api-key",
+                    Some("http://invalid:99999"),
+                )
                 .await;
             // Should fail at network level, not validation
             assert!(result.is_err());
@@ -63,5 +73,4 @@ mod qwen_service_tests {
         // Should fail due to network error
         assert!(result.is_err());
     }
-
 }

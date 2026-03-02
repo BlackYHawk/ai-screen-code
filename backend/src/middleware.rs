@@ -2,11 +2,11 @@ use crate::handlers::auth::Claims;
 use axum::{
     body::Body,
     extract::{Request, State},
-    http::{header::AUTHORIZATION, StatusCode},
+    http::{StatusCode, header::AUTHORIZATION},
     middleware::Next,
     response::Response,
 };
-use jsonwebtoken::{decode, DecodingKey, Validation};
+use jsonwebtoken::{DecodingKey, Validation, decode};
 use std::sync::Arc;
 
 /// 从请求中提取JWT token

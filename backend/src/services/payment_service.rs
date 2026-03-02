@@ -22,7 +22,12 @@ impl PaymentService {
             PaymentMethod::Alipay => "ALI",
             PaymentMethod::Yunshanfu => "YSF",
         };
-        format!("{}_{}_{}", prefix, Utc::now().timestamp_millis(), Self::generate_order_id()[..8].to_string())
+        format!(
+            "{}_{}_{}",
+            prefix,
+            Utc::now().timestamp_millis(),
+            Self::generate_order_id()[..8].to_string()
+        )
     }
 
     /// 生成支付二维码（模拟）
@@ -288,25 +293,15 @@ impl PaymentService {
     }
 
     /// 处理支付回调
-    pub fn process_callback(
-        order: &Order,
-        trade_no: &str,
-        status: &str,
-    ) -> Result<bool, String> {
+    pub fn process_callback(order: &Order, trade_no: &str, status: &str) -> Result<bool, String> {
         // 验证订单状态
         if order.status != OrderStatus::Pending {
-            return Err(format!(
-                "Order already processed: {}",
-                order.status
-            ));
+            return Err(format!("Order already processed: {}", order.status));
         }
 
         // 验证支付状态
         if status != "paid" {
-            return Err(format!(
-                "Payment not successful: {}",
-                status
-            ));
+            return Err(format!("Payment not successful: {}", status));
         }
 
         tracing::info!(

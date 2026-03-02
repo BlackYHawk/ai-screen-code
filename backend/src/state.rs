@@ -47,7 +47,8 @@ impl AppState {
         }
 
         // Create database with custom path
-        let db = Arc::new(Database::new_with_path(&db_path).expect("Failed to create test database"));
+        let db =
+            Arc::new(Database::new_with_path(&db_path).expect("Failed to create test database"));
 
         let state = Self {
             config: Config::default(),
@@ -65,21 +66,47 @@ impl AppState {
         let mut runtime_config = RuntimeConfig::default();
 
         // 预填充配置文件中的值
-        runtime_config.api_keys.insert("qwen".to_string(), config.models.qwen.api_key.clone());
-        runtime_config.base_urls.insert("qwen".to_string(), config.models.qwen.base_url.clone());
-        runtime_config.models.insert("qwen".to_string(), config.models.qwen.default_model.clone());
+        runtime_config
+            .api_keys
+            .insert("qwen".to_string(), config.models.qwen.api_key.clone());
+        runtime_config
+            .base_urls
+            .insert("qwen".to_string(), config.models.qwen.base_url.clone());
+        runtime_config
+            .models
+            .insert("qwen".to_string(), config.models.qwen.default_model.clone());
 
-        runtime_config.api_keys.insert("minimax".to_string(), config.models.minimax.api_key.clone());
-        runtime_config.base_urls.insert("minimax".to_string(), config.models.minimax.base_url.clone());
-        runtime_config.models.insert("minimax".to_string(), config.models.minimax.default_model.clone());
+        runtime_config
+            .api_keys
+            .insert("minimax".to_string(), config.models.minimax.api_key.clone());
+        runtime_config.base_urls.insert(
+            "minimax".to_string(),
+            config.models.minimax.base_url.clone(),
+        );
+        runtime_config.models.insert(
+            "minimax".to_string(),
+            config.models.minimax.default_model.clone(),
+        );
 
-        runtime_config.api_keys.insert("kimi".to_string(), config.models.kimi.api_key.clone());
-        runtime_config.base_urls.insert("kimi".to_string(), config.models.kimi.base_url.clone());
-        runtime_config.models.insert("kimi".to_string(), config.models.kimi.default_model.clone());
+        runtime_config
+            .api_keys
+            .insert("kimi".to_string(), config.models.kimi.api_key.clone());
+        runtime_config
+            .base_urls
+            .insert("kimi".to_string(), config.models.kimi.base_url.clone());
+        runtime_config
+            .models
+            .insert("kimi".to_string(), config.models.kimi.default_model.clone());
 
-        runtime_config.api_keys.insert("glm".to_string(), config.models.glm.api_key.clone());
-        runtime_config.base_urls.insert("glm".to_string(), config.models.glm.base_url.clone());
-        runtime_config.models.insert("glm".to_string(), config.models.glm.default_model.clone());
+        runtime_config
+            .api_keys
+            .insert("glm".to_string(), config.models.glm.api_key.clone());
+        runtime_config
+            .base_urls
+            .insert("glm".to_string(), config.models.glm.base_url.clone());
+        runtime_config
+            .models
+            .insert("glm".to_string(), config.models.glm.default_model.clone());
 
         tracing::info!("Runtime config initialized from config file");
 
@@ -95,10 +122,16 @@ impl AppState {
         // 初始化邮件服务（只有当 smtp_host 非空时才创建）
         let email_service = config.email.as_ref().and_then(|email_config| {
             if email_config.smtp_host.is_empty() {
-                tracing::warn!("Email/SMTP not configured (smtp_host is empty), skipping email service");
+                tracing::warn!(
+                    "Email/SMTP not configured (smtp_host is empty), skipping email service"
+                );
                 None
             } else {
-                tracing::info!("Email/SMTP configured with host: {}:{}", email_config.smtp_host, email_config.smtp_port);
+                tracing::info!(
+                    "Email/SMTP configured with host: {}:{}",
+                    email_config.smtp_host,
+                    email_config.smtp_port
+                );
                 Some(EmailService::new(email_config.clone()))
             }
         });
@@ -149,7 +182,13 @@ impl AppState {
     }
 
     /// 更新运行时配置
-    pub async fn update_config(&self, model: &str, api_key: Option<String>, base_url: Option<String>, model_name: Option<String>) {
+    pub async fn update_config(
+        &self,
+        model: &str,
+        api_key: Option<String>,
+        base_url: Option<String>,
+        model_name: Option<String>,
+    ) {
         let mut runtime = self.runtime_config.write().await;
         if let Some(key) = api_key {
             runtime.api_keys.insert(model.to_string(), key);

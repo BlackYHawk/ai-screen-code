@@ -80,7 +80,9 @@ impl DouyinOAuthService {
             .query(&params)
             .send()
             .await
-            .map_err(|e| AppError::InternalServerError(format!("Failed to exchange code: {}", e)))?;
+            .map_err(|e| {
+                AppError::InternalServerError(format!("Failed to exchange code: {}", e))
+            })?;
 
         let token_response: DouyinAccessTokenResponse = response.json().await.map_err(|e| {
             AppError::InternalServerError(format!("Failed to parse token response: {}", e))
@@ -95,13 +97,17 @@ impl DouyinOAuthService {
             }
         }
 
-        token_response.data.ok_or_else(|| {
-            AppError::InternalServerError("No data in token response".to_string())
-        })
+        token_response
+            .data
+            .ok_or_else(|| AppError::InternalServerError("No data in token response".to_string()))
     }
 
     /// Get user info using access token
-    pub async fn get_user_info(&self, access_token: &str, openid: &str) -> Result<OAuthUserInfo, AppError> {
+    pub async fn get_user_info(
+        &self,
+        access_token: &str,
+        openid: &str,
+    ) -> Result<OAuthUserInfo, AppError> {
         let params = vec![
             ("access_token", access_token.to_string()),
             ("open_id", openid.to_string()),
@@ -113,7 +119,9 @@ impl DouyinOAuthService {
             .query(&params)
             .send()
             .await
-            .map_err(|e| AppError::InternalServerError(format!("Failed to get user info: {}", e)))?;
+            .map_err(|e| {
+                AppError::InternalServerError(format!("Failed to get user info: {}", e))
+            })?;
 
         let user_info_response: DouyinUserInfoResponse = response.json().await.map_err(|e| {
             AppError::InternalServerError(format!("Failed to parse user info response: {}", e))
@@ -142,6 +150,7 @@ impl DouyinOAuthService {
     /// Complete OAuth flow: exchange code for user info
     pub async fn get_user_from_code(&self, code: &str) -> Result<OAuthUserInfo, AppError> {
         let token_data = self.exchange_code_for_token(code).await?;
-        self.get_user_info(&token_data.access_token, &token_data.openid).await
+        self.get_user_info(&token_data.access_token, &token_data.openid)
+            .await
     }
 }

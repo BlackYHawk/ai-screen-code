@@ -1,12 +1,12 @@
-use axum::{
-    extract::{Path, State},
-    Json,
-};
 use crate::error::{AppError, AppResult};
 use crate::models::response::ApiResponse;
 use crate::models::{DeleteHistoryResponse, HistoryItem, HistoryQuery, HistoryResponse};
 use crate::services::history_service::HistoryService;
 use crate::state::AppState;
+use axum::{
+    Json,
+    extract::{Path, State},
+};
 
 pub async fn list_history_handler(
     State(state): State<AppState>,
@@ -54,9 +54,6 @@ pub async fn delete_history_handler(
             message: "History deleted successfully".to_string(),
         })))
     } else {
-        Err(AppError::NotFound(format!(
-            "History not found: {}",
-            id
-        )))
+        Err(AppError::NotFound(format!("History not found: {}", id)))
     }
 }

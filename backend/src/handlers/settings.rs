@@ -1,8 +1,8 @@
-use axum::{extract::State, Json};
 use crate::error::AppResult;
 use crate::models::response::ApiResponse;
-use crate::models::{SettingsResponse, UpdateSettingsRequest, ModelRuntimeConfig};
+use crate::models::{ModelRuntimeConfig, SettingsResponse, UpdateSettingsRequest};
 use crate::state::AppState;
+use axum::{Json, extract::State};
 
 pub async fn get_settings_handler(
     State(state): State<AppState>,
@@ -27,7 +27,9 @@ pub async fn get_settings_handler(
     }
 
     // 获取默认模型
-    let default_model = runtime.models.get("qwen")
+    let default_model = runtime
+        .models
+        .get("qwen")
         .cloned()
         .unwrap_or_else(|| config.models.qwen.default_model.clone());
 
@@ -52,13 +54,17 @@ pub async fn update_settings_handler(
 
     if let Some(base_urls) = payload.custom_base_urls {
         for (model, base_url) in base_urls {
-            state.update_config(&model, None, Some(base_url), None).await;
+            state
+                .update_config(&model, None, Some(base_url), None)
+                .await;
         }
     }
 
     // 获取当前配置
     let runtime = state.runtime_config.read().await;
-    let default_model = runtime.models.get("qwen")
+    let default_model = runtime
+        .models
+        .get("qwen")
         .cloned()
         .unwrap_or_else(|| "qwen".to_string());
 
@@ -85,24 +91,29 @@ pub async fn get_model_config_handler(
     let runtime = state.runtime_config.read().await;
 
     let api_key = runtime.api_keys.get(&model).cloned().unwrap_or_default();
-    let base_url = runtime.base_urls.get(&model).cloned().unwrap_or_else(|| {
-        match model.as_str() {
+    let base_url = runtime
+        .base_urls
+        .get(&model)
+        .cloned()
+        .unwrap_or_else(|| match model.as_str() {
             "qwen" => state.config.models.qwen.base_url.clone(),
             "minimax" => state.config.models.minimax.base_url.clone(),
             "kimi" => state.config.models.kimi.base_url.clone(),
             "glm" => state.config.models.glm.base_url.clone(),
             _ => String::new(),
-        }
-    });
-    let default_model = runtime.models.get(&model).cloned().unwrap_or_else(|| {
-        match model.as_str() {
-            "qwen" => state.config.models.qwen.default_model.clone(),
-            "minimax" => state.config.models.minimax.default_model.clone(),
-            "kimi" => state.config.models.kimi.default_model.clone(),
-            "glm" => state.config.models.glm.default_model.clone(),
-            _ => String::new(),
-        }
-    });
+        });
+    let default_model =
+        runtime
+            .models
+            .get(&model)
+            .cloned()
+            .unwrap_or_else(|| match model.as_str() {
+                "qwen" => state.config.models.qwen.default_model.clone(),
+                "minimax" => state.config.models.minimax.default_model.clone(),
+                "kimi" => state.config.models.kimi.default_model.clone(),
+                "glm" => state.config.models.glm.default_model.clone(),
+                _ => String::new(),
+            });
 
     Ok(Json(ApiResponse::success(ModelRuntimeConfig {
         api_key,
@@ -121,15 +132,22 @@ pub async fn update_model_config_handler(
     let base_url = payload.base_url.clone();
     let default_model = payload.default_model.clone();
 
-    state.update_config(
-        &model,
-        Some(api_key.clone()),
-        Some(base_url.clone()),
-        Some(default_model.clone()),
-    ).await;
+    state
+        .update_config(
+            &model,
+            Some(api_key.clone()),
+            Some(base_url.clone()),
+            Some(default_model.clone()),
+        )
+        .await;
 
-    tracing::info!("Updated model config: {} - API Key: {}, Base URL: {}, Model: {}",
-        model, api_key, base_url, default_model);
+    tracing::info!(
+        "Updated model config: {} - API Key: {}, Base URL: {}, Model: {}",
+        model,
+        api_key,
+        base_url,
+        default_model
+    );
 
     Ok(Json(ApiResponse::success(payload)))
 }

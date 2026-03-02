@@ -1,5 +1,3 @@
-use axum::{extract::State, Json};
-use validator::Validate;
 use crate::error::{AppError, AppResult};
 use crate::models::response::ApiResponse;
 use crate::models::{ModelInfo, ModelsResponse, ValidateModelRequest, ValidateModelResponse};
@@ -9,6 +7,8 @@ use crate::services::kimi_service::KimiService;
 use crate::services::minimax_service::MiniMaxService;
 use crate::services::qwen_service::QwenService;
 use crate::state::AppState;
+use axum::{Json, extract::State};
+use validator::Validate;
 
 fn get_ai_service(model: &str, model_name: &str) -> Box<dyn AiService> {
     match model.to_lowercase().as_str() {
@@ -56,7 +56,10 @@ pub async fn list_models_handler(
         },
     ];
 
-    Ok(Json(ApiResponse::success(ModelsResponse { success: true, models })))
+    Ok(Json(ApiResponse::success(ModelsResponse {
+        success: true,
+        models,
+    })))
 }
 
 pub async fn validate_model_handler(
@@ -70,9 +73,10 @@ pub async fn validate_model_handler(
     let ai_service = get_ai_service(&payload.model, "");
 
     // 获取base_url
-    let base_url = payload.base_url.clone().unwrap_or_else(|| {
-        futures::executor::block_on(state.get_base_url(&payload.model))
-    });
+    let base_url = payload
+        .base_url
+        .clone()
+        .unwrap_or_else(|| futures::executor::block_on(state.get_base_url(&payload.model)));
 
     let result = ai_service
         .validate_api_key(&payload.api_key, Some(&base_url))
@@ -81,19 +85,21 @@ pub async fn validate_model_handler(
     let (is_valid, message) = match result {
         Ok(true) => {
             // 验证成功后更新运行时配置
-            state.update_config(
-                &payload.model,
-                Some(payload.api_key.clone()),
-                Some(base_url.clone()),
-                None,
-            ).await;
+            state
+                .update_config(
+                    &payload.model,
+                    Some(payload.api_key.clone()),
+                    Some(base_url.clone()),
+                    None,
+                )
+                .await;
             (true, format!("API Key验证成功: {}", payload.model))
-        },
+        }
         Ok(false) => (false, format!("API Key无效: {}", payload.model)),
         Err(e) => {
             let error_msg = match e {
                 AppError::AiServiceError(msg) => msg,
-                _ => e.to_string()
+                _ => e.to_string(),
             };
             (false, error_msg)
         }
