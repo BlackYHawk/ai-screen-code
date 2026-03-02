@@ -1,21 +1,21 @@
 use crate::database::Database;
 use crate::error::AppError;
 use crate::models::{
-    BankCard, BankCardResponse, BindCardRequest, LoginRequest, LoginResponse, RegisterRequest,
-    ResetPasswordRequest, SendCodeRequest, ThirdPartyLoginRequest, UpdateProfileRequest, User,
-    UserResponse, VerificationCode, VerifyCodeRequest, ApiResponse,
+    ApiResponse, BankCard, BankCardResponse, BindCardRequest, LoginRequest, LoginResponse,
+    RegisterRequest, ResetPasswordRequest, SendCodeRequest, ThirdPartyLoginRequest,
+    UpdateProfileRequest, User, UserResponse, VerificationCode, VerifyCodeRequest,
 };
 use crate::services::oauth::OAuthServiceFactory;
 use crate::state::AppState;
+use axum::extract::Multipart;
 use axum::{
+    Extension,
     extract::{Path, State},
     response::Json,
-    Extension,
 };
-use axum::extract::Multipart;
 use bcrypt::{hash, verify};
 use chrono::Utc;
-use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, TokenData, Validation};
+use jsonwebtoken::{DecodingKey, EncodingKey, Header, TokenData, Validation, decode, encode};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::path::Path as StdPath;
@@ -151,7 +151,9 @@ pub async fn login_handler(
         .map_err(|_| AppError::InternalServerError("Failed to verify password".to_string()))?;
 
     if !valid {
-        return Err(AppError::Unauthorized("Invalid email or password".to_string()));
+        return Err(AppError::Unauthorized(
+            "Invalid email or password".to_string(),
+        ));
     }
 
     // Generate token
@@ -229,7 +231,10 @@ pub async fn bind_card_handler(
 ) -> Result<Json<ApiResponse<BankCardResponse>>, AppError> {
     // Validate card number (basic validation - should be 16-19 digits)
     let card_number = req.card_number.replace(' ', "");
-    if card_number.len() < 13 || card_number.len() > 19 || !card_number.chars().all(|c| c.is_ascii_digit()) {
+    if card_number.len() < 13
+        || card_number.len() > 19
+        || !card_number.chars().all(|c| c.is_ascii_digit())
+    {
         return Err(AppError::BadRequest("Invalid card number".to_string()));
     }
 
@@ -240,13 +245,22 @@ pub async fn bind_card_handler(
 
     // Validate card holder name
     if req.card_holder_name.trim().is_empty() {
-        return Err(AppError::BadRequest("Card holder name is required".to_string()));
+        return Err(AppError::BadRequest(
+            "Card holder name is required".to_string(),
+        ));
     }
 
     let db = get_db(&state);
 
     // Only store last 4 digits
-    let last4 = card_number.chars().rev().take(4).collect::<String>().chars().rev().collect();
+    let last4 = card_number
+        .chars()
+        .rev()
+        .take(4)
+        .collect::<String>()
+        .chars()
+        .rev()
+        .collect();
 
     let card = BankCard {
         id: Uuid::new_v4().to_string(),
@@ -280,7 +294,9 @@ pub async fn delete_card_handler(
 
     tracing::info!("Bank card deleted: {}", card_id);
 
-    Ok(Json(ApiResponse::success(serde_json::json!({ "success": true }))))
+    Ok(Json(ApiResponse::success(
+        serde_json::json!({ "success": true }),
+    )))
 }
 
 /// 发送验证码
@@ -297,14 +313,18 @@ pub async fn send_code_handler(
 
     // 检查是否可以发送验证码
     if !db.can_send_verification_code(&req.email)? {
-        return Err(AppError::BadRequest("Please wait 60 seconds before requesting another code".to_string()));
+        return Err(AppError::BadRequest(
+            "Please wait 60 seconds before requesting another code".to_string(),
+        ));
     }
 
     // 生成6位数字验证码
-    let code: String = (0..6).map(|_| {
-        let mut rng = rand::thread_rng();
-        char::from_digit(rng.gen_range(0..10), 10).unwrap()
-    }).collect();
+    let code: String = (0..6)
+        .map(|_| {
+            let mut rng = rand::thread_rng();
+            char::from_digit(rng.gen_range(0..10), 10).unwrap()
+        })
+        .collect();
 
     // 创建验证码记录
     let verification_code = VerificationCode {
@@ -327,7 +347,10 @@ pub async fn send_code_handler(
             }
             Err(e) => {
                 // 邮件发送失败，返回 dev_code（仅用于开发环境）
-                tracing::warn!("Failed to send email: {}, returning dev_code for development", e);
+                tracing::warn!(
+                    "Failed to send email: {}, returning dev_code for development",
+                    e
+                );
                 return Ok(Json(serde_json::json!({
                     "success": true,
                     "message": "Verification code (dev mode)",
@@ -361,7 +384,8 @@ pub async fn verify_code_handler(
     let db = get_db(&state);
 
     // 查找有效的验证码
-    let verification = db.find_valid_verification_code(&req.email, &req.code, &req.code_type)?
+    let verification = db
+        .find_valid_verification_code(&req.email, &req.code, &req.code_type)?
         .ok_or_else(|| AppError::BadRequest("Invalid or expired verification code".to_string()))?;
 
     // 标记验证码已使用
@@ -395,9 +419,15 @@ pub async fn third_party_login_handler(
 
     // Create OAuth service and exchange code for user info
     let oauth_service = OAuthServiceFactory::create_service(&req.provider, &provider_config)?;
-    let user_info = oauth_service.get_user_from_code(&req.code).await.map_err(|e| {
-        AppError::InternalServerError(format!("Failed to authenticate with {}: {}", req.provider, e))
-    })?;
+    let user_info = oauth_service
+        .get_user_from_code(&req.code)
+        .await
+        .map_err(|e| {
+            AppError::InternalServerError(format!(
+                "Failed to authenticate with {}: {}",
+                req.provider, e
+            ))
+        })?;
 
     // Find user by provider and openid
     let user = db
@@ -431,7 +461,8 @@ pub async fn third_party_bind_handler(
     }
 
     // 查找用户
-    let user = db.find_user_by_email(&req.email)?
+    let user = db
+        .find_user_by_email(&req.email)?
         .ok_or_else(|| AppError::NotFound("User not found".to_string()))?;
 
     // 验证密码
@@ -455,9 +486,15 @@ pub async fn third_party_bind_handler(
 
     // Create OAuth service and exchange code for user info
     let oauth_service = OAuthServiceFactory::create_service(&req.provider, &provider_config)?;
-    let user_info = oauth_service.get_user_from_code(&req.code).await.map_err(|e| {
-        AppError::InternalServerError(format!("Failed to authenticate with {}: {}", req.provider, e))
-    })?;
+    let user_info = oauth_service
+        .get_user_from_code(&req.code)
+        .await
+        .map_err(|e| {
+            AppError::InternalServerError(format!(
+                "Failed to authenticate with {}: {}",
+                req.provider, e
+            ))
+        })?;
 
     // 更新用户绑定第三方账号
     db.update_user_provider(&user.id, &req.provider, &user_info.openid, None)?;
@@ -478,16 +515,20 @@ pub async fn reset_password_handler(
     let db = get_db(&state);
 
     // 验证验证码
-    let verification = db.find_valid_verification_code(&req.email, &req.code, "reset_password")?
+    let verification = db
+        .find_valid_verification_code(&req.email, &req.code, "reset_password")?
         .ok_or_else(|| AppError::BadRequest("Invalid or expired verification code".to_string()))?;
 
     // 查找用户
-    let user = db.find_user_by_email(&req.email)?
+    let user = db
+        .find_user_by_email(&req.email)?
         .ok_or_else(|| AppError::NotFound("User not found".to_string()))?;
 
     // 验证新密码
     if req.new_password.len() < 6 {
-        return Err(AppError::BadRequest("Password must be at least 6 characters".to_string()));
+        return Err(AppError::BadRequest(
+            "Password must be at least 6 characters".to_string(),
+        ));
     }
 
     // 哈希新密码
@@ -561,12 +602,17 @@ pub async fn upload_avatar_handler(
     let field = match multipart.next_field().await {
         Ok(Some(field)) => field,
         Ok(None) => return Err(AppError::BadRequest("No file uploaded".to_string())),
-        Err(e) => return Err(AppError::BadRequest(format!("Failed to read upload: {}", e))),
+        Err(e) => {
+            return Err(AppError::BadRequest(format!(
+                "Failed to read upload: {}",
+                e
+            )));
+        }
     };
 
-    let filename = field.file_name().ok_or_else(|| {
-        AppError::BadRequest("Invalid file name".to_string())
-    })?;
+    let filename = field
+        .file_name()
+        .ok_or_else(|| AppError::BadRequest("Invalid file name".to_string()))?;
 
     // Validate file extension
     let extension = StdPath::new(filename)
@@ -589,7 +635,9 @@ pub async fn upload_avatar_handler(
 
     // Check file size (max 100KB)
     if bytes.len() > 100 * 1024 {
-        return Err(AppError::BadRequest("File size must be less than 100KB".to_string()));
+        return Err(AppError::BadRequest(
+            "File size must be less than 100KB".to_string(),
+        ));
     }
 
     // Generate unique filename
@@ -606,9 +654,8 @@ pub async fn upload_avatar_handler(
     }
 
     // Save file
-    std::fs::write(&full_path, &bytes).map_err(|e| {
-        AppError::InternalServerError(format!("Failed to save file: {}", e))
-    })?;
+    std::fs::write(&full_path, &bytes)
+        .map_err(|e| AppError::InternalServerError(format!("Failed to save file: {}", e)))?;
 
     // Build avatar URL (using full URL with host)
     let avatar_url = format!("https://{}/static/avatars/{}", host, new_filename);

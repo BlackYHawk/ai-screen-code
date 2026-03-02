@@ -10,8 +10,8 @@ pub use request::*;
 
 // Use response types directly (subscription has conflicting ApiResponse)
 pub use response::{
-    ApiResponse, DeleteHistoryResponse, GenerateResponse, HistoryItem, HistoryResponse,
-    ModelInfo, ModelRuntimeConfig, ModelsResponse, SettingsResponse, ValidateModelResponse,
+    ApiResponse, DeleteHistoryResponse, GenerateResponse, HistoryItem, HistoryResponse, ModelInfo,
+    ModelRuntimeConfig, ModelsResponse, SettingsResponse, ValidateModelResponse,
 };
 
 // Re-export all from subscription

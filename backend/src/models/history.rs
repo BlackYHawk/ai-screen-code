@@ -14,12 +14,7 @@ pub struct History {
 }
 
 impl History {
-    pub fn new(
-        image_base64: String,
-        code: String,
-        language: String,
-        model: String,
-    ) -> Self {
+    pub fn new(image_base64: String, code: String, language: String, model: String) -> Self {
         Self {
             id: Uuid::new_v4().to_string(),
             image_base64,

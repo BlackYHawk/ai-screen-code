@@ -62,17 +62,26 @@ pub struct OAuthServiceFactory;
 
 impl OAuthServiceFactory {
     /// Create OAuth service for the specified provider
-    pub fn create_service(provider: &str, config: &OAuthProviderConfig) -> Result<Box<dyn OAuthProvider>, AppError> {
+    pub fn create_service(
+        provider: &str,
+        config: &OAuthProviderConfig,
+    ) -> Result<Box<dyn OAuthProvider>, AppError> {
         match provider {
             "qq" => Ok(Box::new(QqOAuthService::new(config.clone()))),
             "wechat" => Ok(Box::new(WechatOAuthService::new(config.clone()))),
             "douyin" => Ok(Box::new(DouyinOAuthService::new(config.clone()))),
-            _ => Err(AppError::BadRequest(format!("Unsupported OAuth provider: {}", provider))),
+            _ => Err(AppError::BadRequest(format!(
+                "Unsupported OAuth provider: {}",
+                provider
+            ))),
         }
     }
 
     /// Get OAuth config for the specified provider
-    pub fn get_provider_config(provider: &str, oauth_config: &OAuthConfig) -> Option<OAuthProviderConfig> {
+    pub fn get_provider_config(
+        provider: &str,
+        oauth_config: &OAuthConfig,
+    ) -> Option<OAuthProviderConfig> {
         match provider {
             "qq" => oauth_config.qq.clone(),
             "wechat" => oauth_config.wechat.clone(),

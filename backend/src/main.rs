@@ -4,21 +4,20 @@ use dotenv::dotenv;
 use ai_screen_code::config::Config;
 use ai_screen_code::handlers::{
     bind_card_handler, create_order_handler, delete_card_handler, delete_history_handler,
-    generate_code_handler, generate_code_streaming_handler, get_history_handler, get_model_config_handler,
-    get_oauth_url_handler, get_order_history_handler, get_order_status_handler, get_plans_handler,
-    get_profile_handler, get_settings_handler, get_subscription_status_handler, list_cards_handler,
-    list_history_handler, list_models_handler, login_handler, payment_callback_handler, register_handler,
-    reset_password_handler, send_code_handler, third_party_bind_handler, third_party_login_handler,
-    update_model_config_handler, update_profile_handler, update_settings_handler, upload_avatar_handler,
-    validate_model_handler, verify_code_handler,
+    generate_code_handler, generate_code_streaming_handler, get_history_handler,
+    get_model_config_handler, get_oauth_url_handler, get_order_history_handler,
+    get_order_status_handler, get_plans_handler, get_profile_handler, get_settings_handler,
+    get_subscription_status_handler, list_cards_handler, list_history_handler, list_models_handler,
+    login_handler, payment_callback_handler, register_handler, reset_password_handler,
+    send_code_handler, third_party_bind_handler, third_party_login_handler,
+    update_model_config_handler, update_profile_handler, update_settings_handler,
+    upload_avatar_handler, validate_model_handler, verify_code_handler,
 };
 use ai_screen_code::middleware::auth_middleware;
 use ai_screen_code::state::AppState;
 use axum::{
-    middleware,
+    Router, ServiceExt, middleware,
     routing::{delete, get, post, put},
-    Router,
-    ServiceExt,
 };
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -39,7 +38,8 @@ async fn root() -> &'static str {
 #[tokio::main]
 async fn main() {
     // 加载 .env 文件中的环境变量 (从项目根目录)
-    let project_root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).parent()
+    let project_root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
         .map(|p| p.join(".env"))
         .unwrap_or_else(|| std::path::PathBuf::from(".env"));
     if dotenv::from_path(&project_root).is_ok() {
@@ -101,14 +101,26 @@ async fn main() {
         .route("/api/v1/auth/code/send", post(send_code_handler))
         .route("/api/v1/auth/code/verify", post(verify_code_handler))
         // Third party login routes
-        .route("/api/v1/auth/third-party/login", post(third_party_login_handler))
-        .route("/api/v1/auth/third-party/bind", post(third_party_bind_handler))
-        .route("/api/v1/auth/third-party/url/:provider", get(get_oauth_url_handler))
+        .route(
+            "/api/v1/auth/third-party/login",
+            post(third_party_login_handler),
+        )
+        .route(
+            "/api/v1/auth/third-party/bind",
+            post(third_party_bind_handler),
+        )
+        .route(
+            "/api/v1/auth/third-party/url/:provider",
+            get(get_oauth_url_handler),
+        )
         // Password reset route
         .route("/api/v1/auth/password/reset", post(reset_password_handler))
         // API v1 routes (public)
         .route("/api/v1/generate", post(generate_code_handler))
-        .route("/api/v1/generate/stream", post(generate_code_streaming_handler))
+        .route(
+            "/api/v1/generate/stream",
+            post(generate_code_streaming_handler),
+        )
         .route("/api/v1/models", get(list_models_handler))
         .route("/api/v1/models/validate", post(validate_model_handler))
         // Model config routes
@@ -123,8 +135,14 @@ async fn main() {
         .route("/api/v1/settings", post(update_settings_handler))
         // Subscription routes (public)
         .route("/api/v1/subscriptions/plans", get(get_plans_handler))
-        .route("/api/v1/subscriptions/webhook", post(payment_callback_handler))
-        .route("/api/v1/subscriptions/orders/:order_id", get(get_order_status_handler));
+        .route(
+            "/api/v1/subscriptions/webhook",
+            post(payment_callback_handler),
+        )
+        .route(
+            "/api/v1/subscriptions/orders/:order_id",
+            get(get_order_status_handler),
+        );
 
     // Protected routes with auth middleware
     let jwt_secret = Arc::new(app_state.config.jwt_secret.clone());
@@ -136,9 +154,15 @@ async fn main() {
         .route("/api/v1/auth/cards", post(bind_card_handler))
         .route("/api/v1/auth/cards/:id", delete(delete_card_handler))
         // Subscription routes (need auth)
-        .route("/api/v1/subscriptions/status", get(get_subscription_status_handler))
+        .route(
+            "/api/v1/subscriptions/status",
+            get(get_subscription_status_handler),
+        )
         .route("/api/v1/subscriptions/create", post(create_order_handler))
-        .route("/api/v1/subscriptions/orders", get(get_order_history_handler))
+        .route(
+            "/api/v1/subscriptions/orders",
+            get(get_order_history_handler),
+        )
         .layer(middleware::from_fn_with_state(jwt_secret, auth_middleware));
 
     // Merge routes

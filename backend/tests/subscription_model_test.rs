@@ -1,6 +1,6 @@
 use ai_screen_code::models::{
-    CreateOrderRequest, Order, OrderStatus, PaymentCallbackRequest, PaymentMethod,
-    Subscription, SubscriptionPlan, SubscriptionStatus, SubscriptionError,
+    CreateOrderRequest, Order, OrderStatus, PaymentCallbackRequest, PaymentMethod, Subscription,
+    SubscriptionError, SubscriptionPlan, SubscriptionStatus,
 };
 use chrono::Utc;
 
@@ -60,11 +60,26 @@ fn test_payment_method_display() {
 
 #[test]
 fn test_payment_method_from_str() {
-    assert_eq!("wechat".parse::<PaymentMethod>().unwrap(), PaymentMethod::Wechat);
-    assert_eq!("alipay".parse::<PaymentMethod>().unwrap(), PaymentMethod::Alipay);
-    assert_eq!("yunshanfu".parse::<PaymentMethod>().unwrap(), PaymentMethod::Yunshanfu);
-    assert_eq!("WECHAT".parse::<PaymentMethod>().unwrap(), PaymentMethod::Wechat);
-    assert_eq!("ALIPAY".parse::<PaymentMethod>().unwrap(), PaymentMethod::Alipay);
+    assert_eq!(
+        "wechat".parse::<PaymentMethod>().unwrap(),
+        PaymentMethod::Wechat
+    );
+    assert_eq!(
+        "alipay".parse::<PaymentMethod>().unwrap(),
+        PaymentMethod::Alipay
+    );
+    assert_eq!(
+        "yunshanfu".parse::<PaymentMethod>().unwrap(),
+        PaymentMethod::Yunshanfu
+    );
+    assert_eq!(
+        "WECHAT".parse::<PaymentMethod>().unwrap(),
+        PaymentMethod::Wechat
+    );
+    assert_eq!(
+        "ALIPAY".parse::<PaymentMethod>().unwrap(),
+        PaymentMethod::Alipay
+    );
 }
 
 #[test]
@@ -202,7 +217,10 @@ fn test_create_order_request_validate_invalid_plan() {
 
     let result = request.validate();
     assert!(result.is_err());
-    assert!(matches!(result.unwrap_err(), SubscriptionError::InvalidPlan(_)));
+    assert!(matches!(
+        result.unwrap_err(),
+        SubscriptionError::InvalidPlan(_)
+    ));
 }
 
 #[test]
@@ -214,7 +232,10 @@ fn test_create_order_request_validate_invalid_payment_method() {
 
     let result = request.validate();
     assert!(result.is_err());
-    assert!(matches!(result.unwrap_err(), SubscriptionError::InvalidPaymentMethod(_)));
+    assert!(matches!(
+        result.unwrap_err(),
+        SubscriptionError::InvalidPaymentMethod(_)
+    ));
 }
 
 #[test]
@@ -225,7 +246,12 @@ fn test_create_order_request_validate_all_valid_plans() {
                 plan: plan.to_string(),
                 payment_method: method.to_string(),
             };
-            assert!(request.validate().is_ok(), "plan: {}, method: {}", plan, method);
+            assert!(
+                request.validate().is_ok(),
+                "plan: {}, method: {}",
+                plan,
+                method
+            );
         }
     }
 }

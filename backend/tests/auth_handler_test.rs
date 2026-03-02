@@ -1,6 +1,6 @@
-use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, TokenData, Validation};
-use serde::{Deserialize, Serialize};
 use chrono::Utc;
+use jsonwebtoken::{DecodingKey, EncodingKey, Header, TokenData, Validation, decode, encode};
+use serde::{Deserialize, Serialize};
 
 /// JWT Claims - same as in auth.rs
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -24,7 +24,11 @@ impl Claims {
 }
 
 /// Generate JWT Token - same logic as in auth.rs
-fn generate_token(user_id: &str, email: &str, secret: &[u8]) -> Result<String, jsonwebtoken::errors::Error> {
+fn generate_token(
+    user_id: &str,
+    email: &str,
+    secret: &[u8],
+) -> Result<String, jsonwebtoken::errors::Error> {
     let claims = Claims::new(user_id.to_string(), email.to_string(), 7 * 24 * 60 * 60);
     encode(
         &Header::default(),
@@ -34,14 +38,13 @@ fn generate_token(user_id: &str, email: &str, secret: &[u8]) -> Result<String, j
 }
 
 /// Verify JWT Token - same logic as in auth.rs
-fn verify_token(token: &str, secret: &[u8]) -> Result<TokenData<Claims>, jsonwebtoken::errors::Error> {
+fn verify_token(
+    token: &str,
+    secret: &[u8],
+) -> Result<TokenData<Claims>, jsonwebtoken::errors::Error> {
     let mut validation = Validation::default();
     validation.validate_exp = true; // Enable expiry validation
-    decode::<Claims>(
-        token,
-        &DecodingKey::from_secret(secret),
-        &validation,
-    )
+    decode::<Claims>(token, &DecodingKey::from_secret(secret), &validation)
 }
 
 #[test]

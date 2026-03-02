@@ -1,5 +1,5 @@
-use ai_screen_code::services::minimax_service::MiniMaxService;
 use ai_screen_code::services::ai_service::AiService;
+use ai_screen_code::services::minimax_service::MiniMaxService;
 
 mod minimax_service_tests {
     use super::*;
@@ -28,7 +28,12 @@ mod minimax_service_tests {
     async fn test_generate_code_network_error() {
         let service = MiniMaxService::new("MiniMax-VL01");
         let result = service
-            .generate_code("test-image-base64", "react", "test-api-key", Some("http://invalid:99999"))
+            .generate_code(
+                "test-image-base64",
+                "react",
+                "test-api-key",
+                Some("http://invalid:99999"),
+            )
             .await;
 
         assert!(result.is_err());
@@ -40,7 +45,12 @@ mod minimax_service_tests {
 
         for lang in ["react", "vue", "swift", "kotlin", "python"] {
             let result = service
-                .generate_code("test-image-base64", lang, "test-api-key", Some("http://invalid:99999"))
+                .generate_code(
+                    "test-image-base64",
+                    lang,
+                    "test-api-key",
+                    Some("http://invalid:99999"),
+                )
                 .await;
             assert!(result.is_err());
         }
@@ -55,5 +65,4 @@ mod minimax_service_tests {
 
         assert!(result.is_err());
     }
-
 }

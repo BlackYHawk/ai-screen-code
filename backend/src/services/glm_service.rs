@@ -1,12 +1,12 @@
+use crate::error::{AppError, AppResult};
+use crate::services::ai_service::AiService;
 use async_trait::async_trait;
-use futures::stream::{self, BoxStream};
 use futures::StreamExt;
+use futures::stream::{self, BoxStream};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use tokio::time::sleep;
-use crate::error::{AppError, AppResult};
-use crate::services::ai_service::AiService;
 
 const DEFAULT_BASE_URL: &str = "https://open.bigmodel.cn/api/paas/v4";
 const DEFAULT_MODEL: &str = "glm-4v";
@@ -182,9 +182,12 @@ impl AiService for GlmService {
         base_url: Option<&str>,
     ) -> BoxStream<'static, AppResult<String>> {
         // Use block_on to call async generate_code
-        let code = match tokio::runtime::Handle::current().block_on(
-            self.generate_code(image_base64, language, api_key, base_url)
-        ) {
+        let code = match tokio::runtime::Handle::current().block_on(self.generate_code(
+            image_base64,
+            language,
+            api_key,
+            base_url,
+        )) {
             Ok(c) => c,
             Err(e) => return stream::once(async { Err(e) }).boxed(),
         };
@@ -238,13 +241,20 @@ impl AiService for GlmService {
         // Try to parse error message from response
         let status = response.status();
         if status.as_u16() == 401 {
-            return Err(AppError::AiServiceError("API Key无效，请检查是否正确".to_string()));
+            return Err(AppError::AiServiceError(
+                "API Key无效，请检查是否正确".to_string(),
+            ));
         } else if status.as_u16() == 403 {
             return Err(AppError::AiServiceError("API Key没有权限".to_string()));
         } else if status.as_u16() == 429 {
-            return Err(AppError::AiServiceError("请求频率超限，请稍后重试".to_string()));
+            return Err(AppError::AiServiceError(
+                "请求频率超限，请稍后重试".to_string(),
+            ));
         } else {
-            return Err(AppError::AiServiceError(format!("API请求失败: HTTP {}", status.as_u16())));
+            return Err(AppError::AiServiceError(format!(
+                "API请求失败: HTTP {}",
+                status.as_u16()
+            )));
         }
     }
 }

@@ -1,6 +1,6 @@
 use crate::models::{BankCard, Order, Subscription, SubscriptionStatus, User};
 use chrono::Utc;
-use rusqlite::{params, Connection, Result};
+use rusqlite::{Connection, Result, params};
 use std::path::PathBuf;
 use std::sync::Mutex;
 
@@ -413,7 +413,11 @@ impl Database {
     }
 
     /// 更新订阅状态
-    pub fn update_subscription_status(&self, sub_id: &str, status: SubscriptionStatus) -> Result<()> {
+    pub fn update_subscription_status(
+        &self,
+        sub_id: &str,
+        status: SubscriptionStatus,
+    ) -> Result<()> {
         let conn = self.conn.lock().unwrap();
         conn.execute(
             "UPDATE subscriptions SET status = ?1 WHERE id = ?2",
@@ -462,7 +466,9 @@ impl Database {
                 user_id: row.get(1)?,
                 plan: row.get(2)?,
                 amount: row.get(3)?,
-                payment_method: payment_method_str.parse().unwrap_or(crate::models::PaymentMethod::Alipay),
+                payment_method: payment_method_str
+                    .parse()
+                    .unwrap_or(crate::models::PaymentMethod::Alipay),
                 status: match status_str.as_str() {
                     "pending" => crate::models::OrderStatus::Pending,
                     "paid" => crate::models::OrderStatus::Paid,
@@ -480,7 +486,12 @@ impl Database {
     }
 
     /// 更新订单状态
-    pub fn update_order_status(&self, order_id: &str, status: crate::models::OrderStatus, trade_no: Option<String>) -> Result<()> {
+    pub fn update_order_status(
+        &self,
+        order_id: &str,
+        status: crate::models::OrderStatus,
+        trade_no: Option<String>,
+    ) -> Result<()> {
         let conn = self.conn.lock().unwrap();
         conn.execute(
             "UPDATE orders SET status = ?1, trade_no = ?2 WHERE id = ?3",
@@ -505,7 +516,9 @@ impl Database {
                 user_id: row.get(1)?,
                 plan: row.get(2)?,
                 amount: row.get(3)?,
-                payment_method: payment_method_str.parse().unwrap_or(crate::models::PaymentMethod::Alipay),
+                payment_method: payment_method_str
+                    .parse()
+                    .unwrap_or(crate::models::PaymentMethod::Alipay),
                 status: match status_str.as_str() {
                     "pending" => crate::models::OrderStatus::Pending,
                     "paid" => crate::models::OrderStatus::Paid,
@@ -569,7 +582,13 @@ impl Database {
     }
 
     /// 更新用户绑定第三方账号
-    pub fn update_user_provider(&self, user_id: &str, provider: &str, provider_id: &str, provider_token: Option<&str>) -> Result<()> {
+    pub fn update_user_provider(
+        &self,
+        user_id: &str,
+        provider: &str,
+        provider_id: &str,
+        provider_token: Option<&str>,
+    ) -> Result<()> {
         let conn = self.conn.lock().unwrap();
         conn.execute(
             "UPDATE users SET provider = ?1, provider_id = ?2, provider_token = ?3 WHERE id = ?4",
@@ -600,7 +619,12 @@ impl Database {
     }
 
     /// 查找有效的验证码
-    pub fn find_valid_verification_code(&self, email: &str, code: &str, code_type: &str) -> Result<Option<crate::models::VerificationCode>> {
+    pub fn find_valid_verification_code(
+        &self,
+        email: &str,
+        code: &str,
+        code_type: &str,
+    ) -> Result<Option<crate::models::VerificationCode>> {
         let conn = self.conn.lock().unwrap();
         let mut stmt = conn.prepare(
             "SELECT id, email, code, type, expires_at, used, created_at

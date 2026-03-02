@@ -95,12 +95,30 @@ fn test_payment_method_all_variants() {
 
 #[test]
 fn test_payment_method_from_str() {
-    assert_eq!("wechat".parse::<PaymentMethod>().unwrap(), PaymentMethod::Wechat);
-    assert_eq!("alipay".parse::<PaymentMethod>().unwrap(), PaymentMethod::Alipay);
-    assert_eq!("yunshanfu".parse::<PaymentMethod>().unwrap(), PaymentMethod::Yunshanfu);
-    assert_eq!("WECHAT".parse::<PaymentMethod>().unwrap(), PaymentMethod::Wechat);
-    assert_eq!("ALIPAY".parse::<PaymentMethod>().unwrap(), PaymentMethod::Alipay);
-    assert_eq!("YUNSHANFU".parse::<PaymentMethod>().unwrap(), PaymentMethod::Yunshanfu);
+    assert_eq!(
+        "wechat".parse::<PaymentMethod>().unwrap(),
+        PaymentMethod::Wechat
+    );
+    assert_eq!(
+        "alipay".parse::<PaymentMethod>().unwrap(),
+        PaymentMethod::Alipay
+    );
+    assert_eq!(
+        "yunshanfu".parse::<PaymentMethod>().unwrap(),
+        PaymentMethod::Yunshanfu
+    );
+    assert_eq!(
+        "WECHAT".parse::<PaymentMethod>().unwrap(),
+        PaymentMethod::Wechat
+    );
+    assert_eq!(
+        "ALIPAY".parse::<PaymentMethod>().unwrap(),
+        PaymentMethod::Alipay
+    );
+    assert_eq!(
+        "YUNSHANFU".parse::<PaymentMethod>().unwrap(),
+        PaymentMethod::Yunshanfu
+    );
 }
 
 #[test]
@@ -152,7 +170,10 @@ fn test_create_order_request_validation_invalid_plan() {
     let result = request.validate();
     assert!(result.is_err());
     let err = result.unwrap_err();
-    assert!(matches!(err, ai_screen_code::models::SubscriptionError::InvalidPlan(_)));
+    assert!(matches!(
+        err,
+        ai_screen_code::models::SubscriptionError::InvalidPlan(_)
+    ));
 }
 
 #[test]
@@ -165,7 +186,10 @@ fn test_create_order_request_validation_invalid_payment_method() {
     let result = request.validate();
     assert!(result.is_err());
     let err = result.unwrap_err();
-    assert!(matches!(err, ai_screen_code::models::SubscriptionError::InvalidPaymentMethod(_)));
+    assert!(matches!(
+        err,
+        ai_screen_code::models::SubscriptionError::InvalidPaymentMethod(_)
+    ));
 }
 
 #[test]
@@ -438,8 +462,8 @@ fn test_order_amount_various_plans() {
     let max = SubscriptionPlan::get_by_id("max").unwrap();
 
     assert_eq!(lite.price, 1000); // 10.00 yuan
-    assert_eq!(pro.price, 3000);  // 30.00 yuan
-    assert_eq!(max.price, 5000);  // 50.00 yuan
+    assert_eq!(pro.price, 3000); // 30.00 yuan
+    assert_eq!(max.price, 5000); // 50.00 yuan
 }
 
 #[test]

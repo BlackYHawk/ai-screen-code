@@ -2,7 +2,11 @@ use validator::Validate;
 
 #[derive(Debug, Clone, Validate, serde::Deserialize)]
 pub struct GenerateRequest {
-    #[validate(length(min = 1, max = 10485760, message = "Image data is required and must be less than 10MB"))]
+    #[validate(length(
+        min = 1,
+        max = 10485760,
+        message = "Image data is required and must be less than 10MB"
+    ))]
     pub image: String,
 
     #[validate(length(min = 1, message = "Model is required"))]

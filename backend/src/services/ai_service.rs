@@ -1,5 +1,5 @@
-use async_trait::async_trait;
 use crate::error::AppResult;
+use async_trait::async_trait;
 use futures::stream::BoxStream;
 
 #[async_trait]
@@ -23,9 +23,5 @@ pub trait AiService: Send + Sync {
     ) -> BoxStream<'static, AppResult<String>>;
 
     /// Validate API key
-    async fn validate_api_key(
-        &self,
-        api_key: &str,
-        base_url: Option<&str>,
-    ) -> AppResult<bool>;
+    async fn validate_api_key(&self, api_key: &str, base_url: Option<&str>) -> AppResult<bool>;
 }

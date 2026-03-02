@@ -1,3 +1,4 @@
+use crate::handlers::auth::Claims;
 use crate::models::{
     ApiResponse, CreateOrderRequest, CreateOrderResponse, Order, OrderHistoryResponse, OrderStatus,
     PaymentCallbackRequest, PaymentMethod, Subscription, SubscriptionPlan,
@@ -6,12 +7,11 @@ use crate::models::{
 use crate::services::payment_service::PaymentService;
 use crate::state::AppState;
 use axum::{
-    extract::{Path, State, Extension},
     Json,
+    extract::{Extension, Path, State},
 };
 use chrono::Utc;
 use uuid::Uuid;
-use crate::handlers::auth::Claims;
 
 /// 获取订阅计划列表
 pub async fn get_plans_handler() -> Json<Vec<SubscriptionPlanResponse>> {
@@ -116,7 +116,10 @@ pub async fn payment_callback_handler(
 
     // 幂等性检查：订单已支付则直接返回成功
     if order.status == OrderStatus::Paid {
-        tracing::info!("Order already paid, skipping duplicate callback: {}", req.order_id);
+        tracing::info!(
+            "Order already paid, skipping duplicate callback: {}",
+            req.order_id
+        );
         return Ok(Json(serde_json::json!({
             "success": true,
             "message": "Order already processed"
@@ -203,7 +206,12 @@ pub async fn get_order_history_handler(
     let user_id = &claims.sub;
 
     match state.db.get_user_orders(user_id) {
-        Ok(orders) => Json(ApiResponse::success(orders.iter().map(|o| OrderHistoryResponse::from(o)).collect())),
+        Ok(orders) => Json(ApiResponse::success(
+            orders
+                .iter()
+                .map(|o| OrderHistoryResponse::from(o))
+                .collect(),
+        )),
         _ => Json(ApiResponse::success(Vec::new())),
     }
 }

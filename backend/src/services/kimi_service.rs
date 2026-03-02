@@ -1,8 +1,8 @@
 use crate::error::{AppError, AppResult};
 use crate::services::ai_service::AiService;
 use async_trait::async_trait;
-use futures::stream::{self, BoxStream};
 use futures::StreamExt;
+use futures::stream::{self, BoxStream};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
@@ -190,9 +190,12 @@ impl AiService for KimiService {
         base_url: Option<&str>,
     ) -> BoxStream<'static, AppResult<String>> {
         // Use block_on to call async generate_code
-        let code = match tokio::runtime::Handle::current().block_on(
-            self.generate_code(image_base64, language, api_key, base_url)
-        ) {
+        let code = match tokio::runtime::Handle::current().block_on(self.generate_code(
+            image_base64,
+            language,
+            api_key,
+            base_url,
+        )) {
             Ok(c) => c,
             Err(e) => return stream::once(async { Err(e) }).boxed(),
         };
@@ -253,17 +256,25 @@ impl AiService for KimiService {
         let error_body = response.text().await.unwrap_or_default();
 
         if status.as_u16() == 401 {
-            return Err(AppError::AiServiceError(
-                format!("API Key无效: {}", error_body),
-            ));
+            return Err(AppError::AiServiceError(format!(
+                "API Key无效: {}",
+                error_body
+            )));
         } else if status.as_u16() == 403 {
-            return Err(AppError::AiServiceError(format!("API Key没有权限: {}", error_body)));
+            return Err(AppError::AiServiceError(format!(
+                "API Key没有权限: {}",
+                error_body
+            )));
         } else if status.as_u16() == 429 {
-            return Err(AppError::AiServiceError(format!("请求频率超限: {}", error_body)));
+            return Err(AppError::AiServiceError(format!(
+                "请求频率超限: {}",
+                error_body
+            )));
         } else {
             return Err(AppError::AiServiceError(format!(
                 "API请求失败 HTTP {}: {}",
-                status.as_u16(), error_body
+                status.as_u16(),
+                error_body
             )));
         }
     }

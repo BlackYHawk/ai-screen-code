@@ -63,7 +63,10 @@ impl WechatOAuthService {
     }
 
     /// Exchange code for access token
-    pub async fn exchange_code_for_token(&self, code: &str) -> Result<WechatAccessTokenResponse, AppError> {
+    pub async fn exchange_code_for_token(
+        &self,
+        code: &str,
+    ) -> Result<WechatAccessTokenResponse, AppError> {
         let params = vec![
             ("appid", self.config.client_id.clone()),
             ("secret", self.config.client_secret.clone()),
@@ -77,7 +80,9 @@ impl WechatOAuthService {
             .query(&params)
             .send()
             .await
-            .map_err(|e| AppError::InternalServerError(format!("Failed to exchange code: {}", e)))?;
+            .map_err(|e| {
+                AppError::InternalServerError(format!("Failed to exchange code: {}", e))
+            })?;
 
         let token_response: WechatAccessTokenResponse = response.json().await.map_err(|e| {
             AppError::InternalServerError(format!("Failed to parse token response: {}", e))
@@ -87,7 +92,11 @@ impl WechatOAuthService {
     }
 
     /// Get user info using access token and openid
-    pub async fn get_user_info(&self, access_token: &str, openid: &str) -> Result<OAuthUserInfo, AppError> {
+    pub async fn get_user_info(
+        &self,
+        access_token: &str,
+        openid: &str,
+    ) -> Result<OAuthUserInfo, AppError> {
         let params = vec![
             ("access_token", access_token.to_string()),
             ("openid", openid.to_string()),
@@ -100,7 +109,9 @@ impl WechatOAuthService {
             .query(&params)
             .send()
             .await
-            .map_err(|e| AppError::InternalServerError(format!("Failed to get user info: {}", e)))?;
+            .map_err(|e| {
+                AppError::InternalServerError(format!("Failed to get user info: {}", e))
+            })?;
 
         let user_info: WechatUserInfoResponse = response.json().await.map_err(|e| {
             AppError::InternalServerError(format!("Failed to parse user info response: {}", e))
@@ -128,6 +139,7 @@ impl WechatOAuthService {
     /// Complete OAuth flow: exchange code for user info
     pub async fn get_user_from_code(&self, code: &str) -> Result<OAuthUserInfo, AppError> {
         let token_response = self.exchange_code_for_token(code).await?;
-        self.get_user_info(&token_response.access_token, &token_response.openid).await
+        self.get_user_info(&token_response.access_token, &token_response.openid)
+            .await
     }
 }
