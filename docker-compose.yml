@@ -12,7 +12,7 @@ services:
   # Backend API service
   backend:
     # Use pre-built image from registry (change to your registry)
-    image: ${DOCKER_REGISTRY:-docker.io}/${IMAGE_PREFIX:-your-dockerhub-username/ai-screen-code}-backend:${IMAGE_TAG:-latest}
+    image: ${IMAGE_PREFIX:-your-dockerhub-username/ai-screen-code}-backend:${IMAGE_TAG:-latest}
     container_name: ai-screen-backend
     restart: unless-stopped
     ports:
@@ -67,7 +67,7 @@ services:
   # Frontend service
   frontend:
     # Use pre-built image from registry (change to your registry)
-    image: ${DOCKER_REGISTRY:-docker.io}/${IMAGE_PREFIX:-your-dockerhub-username/ai-screen-code}-frontend:${IMAGE_TAG:-latest}
+    image: ${IMAGE_PREFIX:-your-dockerhub-username/ai-screen-code}-frontend:${IMAGE_TAG:-latest}
     container_name: ai-screen-frontend
     restart: unless-stopped
     ports:
