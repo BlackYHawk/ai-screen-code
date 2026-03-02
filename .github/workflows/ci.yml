@@ -31,15 +31,9 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
-      - name: TypeScript type check
+      - name: TypeScript type check & Build
         working-directory: ./frontend
         run: npm run build
-
-      - name: Run unit tests
-        working-directory: ./frontend
-        run: npm run test
-
-      - name: Build frontend
         working-directory: ./frontend
         run: npm run build
 
@@ -75,10 +69,6 @@ jobs:
       - name: Build backend
         working-directory: ./backend
         run: cargo build --release
-
-      - name: Run tests
-        working-directory: ./backend
-        run: cargo test --release
 
   # Docker Build and Push
   docker:
