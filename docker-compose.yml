@@ -76,7 +76,8 @@ services:
       - "80:80"
       - "443:443"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - ai-screen-network
     environment:
