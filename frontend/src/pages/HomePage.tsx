@@ -72,7 +72,7 @@ export function HomePage() {
       const previewUrl = `data:image/jpeg;base64,${compressedBase64}`
 
       setCurrentFile({
-        id: crypto.randomUUID(),
+        id: crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`,
         file,
         preview: previewUrl,
         base64: compressedBase64,
@@ -83,7 +83,7 @@ export function HomePage() {
       const reader = new FileReader()
       reader.onload = () => {
         setCurrentFile({
-          id: crypto.randomUUID(),
+          id: crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`,
           file,
           preview: reader.result as string,
           base64: (reader.result as string).split(',')[1],
