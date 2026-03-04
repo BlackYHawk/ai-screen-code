@@ -82,11 +82,17 @@ async fn main() {
     // Create application state
     let app_state = AppState::new(config);
 
-    // Configure CORS
+    // Configure CORS - allow GitHub Pages and local development
     let cors = CorsLayer::new()
-        .allow_origin(Any)
+        .allow_origin([
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "https://blackyhawk.github.io",
+            "https://blackyhawk.github.io/ai-screen-code/",
+        ])
         .allow_methods(Any)
-        .allow_headers(Any);
+        .allow_headers(Any)
+        .allow_credentials(true);
 
     // Build router - separate public and protected routes
     let public_routes = Router::new()
