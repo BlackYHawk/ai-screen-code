@@ -99,7 +99,10 @@ async fn main() {
                 .unwrap(),
         ])
         .allow_methods(Any)
-        .allow_headers(Any)
+        .allow_headers([
+            axum::http::HeaderName::from_static("content-type"),
+            axum::http::HeaderName::from_static("authorization"),
+        ])
         .allow_credentials(true);
 
     // Build router - separate public and protected routes
