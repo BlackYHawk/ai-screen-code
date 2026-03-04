@@ -20,7 +20,7 @@ use axum::{
 };
 use std::net::SocketAddr;
 use std::sync::Arc;
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::cors::CorsLayer;
 use tower_http::services::ServeDir;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -98,7 +98,13 @@ async fn main() {
                 .parse::<axum::http::HeaderValue>()
                 .unwrap(),
         ])
-        .allow_methods(Any)
+        .allow_methods([
+            axum::http::Method::GET,
+            axum::http::Method::POST,
+            axum::http::Method::PUT,
+            axum::http::Method::DELETE,
+            axum::http::Method::OPTIONS,
+        ])
         .allow_headers([
             axum::http::HeaderName::from_static("content-type"),
             axum::http::HeaderName::from_static("authorization"),
