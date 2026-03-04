@@ -85,10 +85,18 @@ async fn main() {
     // Configure CORS - allow GitHub Pages and local development
     let cors = CorsLayer::new()
         .allow_origin([
-            "http://localhost:5173".parse::<axum::http::HeaderValue>().unwrap(),
-            "http://localhost:3000".parse::<axum::http::HeaderValue>().unwrap(),
-            "https://blackyhawk.github.io".parse::<axum::http::HeaderValue>().unwrap(),
-            "https://blackyhawk.github.io/ai-screen-code/".parse::<axum::http::HeaderValue>().unwrap(),
+            "http://localhost:5173"
+                .parse::<axum::http::HeaderValue>()
+                .unwrap(),
+            "http://localhost:3000"
+                .parse::<axum::http::HeaderValue>()
+                .unwrap(),
+            "https://blackyhawk.github.io"
+                .parse::<axum::http::HeaderValue>()
+                .unwrap(),
+            "https://blackyhawk.github.io/ai-screen-code/"
+                .parse::<axum::http::HeaderValue>()
+                .unwrap(),
         ])
         .allow_methods(Any)
         .allow_headers(Any)
