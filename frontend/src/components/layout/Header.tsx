@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Code2, History, Home, User, LogOut, Image } from 'lucide-react'
+import { Code2, Home, User, LogOut } from 'lucide-react'
 import { WindowControls } from '@/components/common/WindowControls'
 import authClient from '@/api/auth'
 import type { User as UserType } from '@/types/api'
 
 const navItems = [
   { path: '/', label: '首页', icon: Home },
-  { path: '/history', label: '历史', icon: History },
-  { path: '/tools', label: '图片工具', icon: Image },
 ]
 
 export function Header() {
@@ -46,7 +44,7 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <Code2 className="w-8 h-8 text-blue-600" />
-            <span className="text-xl font-bold text-gray-900">AI Screen Code</span>
+            <span className="text-xl font-bold text-gray-900">AI Image</span>
           </Link>
 
           {/* Navigation */}

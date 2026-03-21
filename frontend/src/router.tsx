@@ -16,7 +16,6 @@ import {
   PrivacyPage,
   ForgotPasswordPage,
   OAuthCallbackPage,
-  ImageToolsPage,
 } from './pages'
 
 // Protected route wrapper
@@ -48,10 +47,6 @@ const routes = [
   {
     path: '/settings',
     element: <SettingsPage />,
-  },
-  {
-    path: '/tools',
-    element: <ImageToolsPage />,
   },
   {
     path: '/login',

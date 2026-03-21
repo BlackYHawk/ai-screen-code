@@ -4,6 +4,7 @@ import { useAppStore } from '@/stores/useAppStore'
 import { generateCode } from '@/api/client'
 import { Layout } from '@/components/layout'
 import { Card, Button } from '@/components/common'
+import { SubscriptionBanner } from '@/components/home'
 import { CodeEditor } from '@/components/editor'
 import { toast } from 'sonner'
 import {
@@ -16,6 +17,7 @@ import {
   Sparkles,
   Zap,
   Eye,
+  History,
 } from 'lucide-react'
 
 type GenerationStep = 'idle' | 'uploading' | 'analyzing' | 'generating' | 'complete' | 'error'
@@ -161,6 +163,7 @@ export function GeneratePage() {
 
   return (
     <Layout>
+      <SubscriptionBanner />
       <div className="h-[calc(100vh-64px)] overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 h-full">
           {/* Left Panel: Model Info & Progress */}
@@ -316,6 +319,14 @@ export function GeneratePage() {
                 onClick={() => navigate('/')}
               >
                 上传新图片
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full"
+                onClick={() => navigate('/history')}
+              >
+                <History className="w-4 h-4 mr-2" />
+                查看历史
               </Button>
             </div>
           </div>
