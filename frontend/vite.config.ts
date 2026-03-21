@@ -63,6 +63,12 @@ export default defineConfig(({ mode }) => ({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  optimizeDeps: {
+    exclude: ['image-wasm'],
+  },
+  build: {
+    target: 'esnext',
+  },
   server: {
     port: 5173,
     proxy: {
