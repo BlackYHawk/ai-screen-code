@@ -45,4 +45,10 @@ test-results/
 # Misc
 *.tgz
 .cache/
-docs/
+
+# Worktrees
+.worktrees/
+worktrees/
+
+# Docs
+docs/plans/
