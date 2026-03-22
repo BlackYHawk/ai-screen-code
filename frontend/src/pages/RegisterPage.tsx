@@ -118,7 +118,7 @@ export function RegisterPage() {
         <div className="max-w-md w-full">
           {/* Logo / Title */}
           <div className="text-center mb-4">
-            <h1 className="text-3xl font-bold text-gray-900">AI Screen Code</h1>
+            <h1 className="text-3xl font-bold text-gray-900">AI Image</h1>
             <p className="text-gray-600 text-sm">上传UI设计图片，AI自动生成前端代码</p>
           </div>
 

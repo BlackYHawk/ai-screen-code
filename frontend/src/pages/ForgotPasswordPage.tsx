@@ -75,7 +75,7 @@ export function ForgotPasswordPage() {
       <div className="max-w-md w-full">
         {/* Logo / Title */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">AI Screen Code</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">AI Image</h1>
           <p className="text-gray-600">上传UI设计图片，AI自动生成前端代码</p>
         </div>
 
