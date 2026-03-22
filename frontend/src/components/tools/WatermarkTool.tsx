@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react'
 import { Download } from 'lucide-react'
 import { watermark, toDataUrl, getMimeType } from '@/utils/imageProcessor'
-import type { WatermarkPosition } from '@/types/image-wasm'
 import { Button } from '@/components/common'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
@@ -14,7 +13,11 @@ export function WatermarkTool({ onProcessed }: WatermarkToolProps) {
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [watermarkText, setWatermarkText] = useState('')
-  const [position, setPosition] = useState<WatermarkPosition>('center')
+  const [fontSize, setFontSize] = useState(48)
+  const [fontWeight, setFontWeight] = useState<'normal' | 'bold'>('normal')
+  const [rotation, setRotation] = useState(-30)
+  const [watermarkColor, setWatermarkColor] = useState('#808080')
+  const [spacing, setSpacing] = useState(10)
   const [processing, setProcessing] = useState(false)
   const [resultUrl, setResultUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -22,6 +25,9 @@ export function WatermarkTool({ onProcessed }: WatermarkToolProps) {
   const validateFile = useCallback((file: File): string | null => {
     if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
       return '不支持的图片格式，请上传 PNG、JPG、JPEG 或 WebP 格式'
+    }
+    if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
+      return '不支持 SVG 格式'
     }
     if (file.size > MAX_FILE_SIZE) {
       return '图片大小不能超过 10MB'
@@ -85,12 +91,12 @@ export function WatermarkTool({ onProcessed }: WatermarkToolProps) {
 
       const result = await watermark(inputData, {
         text: watermarkText,
-        fontSize: 24,
-        position: position,
-        rotation: 0,
-        color: '#ffffff',
-        fontWeight: 'normal',
-        spacing: 100,
+        fontSize: fontSize,
+        position: 'center',
+        rotation: rotation,
+        color: watermarkColor,
+        fontWeight: fontWeight,
+        spacing: spacing,
       })
 
       const mimeType = getMimeType('original')
@@ -98,12 +104,13 @@ export function WatermarkTool({ onProcessed }: WatermarkToolProps) {
 
       setResultUrl(url)
       onProcessed?.(url)
-    } catch (_err) {
-      setError('添加水印失败，请重试')
+    } catch (err) {
+      console.error('Watermark error:', err)
+      setError(`添加水印失败: ${err instanceof Error ? err.message : String(err)}`)
     } finally {
       setProcessing(false)
     }
-  }, [file, watermarkText, position, onProcessed])
+  }, [file, watermarkText, fontSize, fontWeight, rotation, watermarkColor, spacing, onProcessed])
 
   const handleDownload = useCallback(() => {
     if (!resultUrl) return
@@ -133,7 +140,7 @@ export function WatermarkTool({ onProcessed }: WatermarkToolProps) {
         <input
           id="watermark-input"
           type="file"
-          accept=".png,.jpg,.jpeg,.webp"
+          accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
           onChange={handleInputChange}
           className="hidden"
         />
@@ -156,7 +163,7 @@ export function WatermarkTool({ onProcessed }: WatermarkToolProps) {
 
       {/* Preview */}
       {preview && (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+        <div className="rounded-lg p-4">
           <img src={preview} alt="Preview" className="max-h-48 mx-auto object-contain" />
         </div>
       )}
@@ -179,24 +186,89 @@ export function WatermarkTool({ onProcessed }: WatermarkToolProps) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            位置
+            水印颜色
           </label>
-          <select
-            value={position}
-            onChange={(e) => setPosition(e.target.value as WatermarkPosition)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            aria-label="水印位置"
-          >
-            <option value="top-left">左上</option>
-            <option value="top-center">上中</option>
-            <option value="top-right">右上</option>
-            <option value="center-left">左中</option>
-            <option value="center">居中</option>
-            <option value="center-right">右中</option>
-            <option value="bottom-left">左下</option>
-            <option value="bottom-center">下中</option>
-            <option value="bottom-right">右下</option>
-          </select>
+          <div className="flex items-center gap-3">
+            <input
+              type="color"
+              value={watermarkColor}
+              onChange={(e) => setWatermarkColor(e.target.value)}
+              className="w-10 h-10 border border-gray-300 rounded-lg cursor-pointer"
+              aria-label="水印颜色"
+            />
+            <input
+              type="text"
+              value={watermarkColor}
+              onChange={(e) => setWatermarkColor(e.target.value)}
+              placeholder="#808080"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              aria-label="颜色值"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              文字大小: {fontSize}px
+            </label>
+            <input
+              type="range"
+              min="12"
+              max="120"
+              value={fontSize}
+              onChange={(e) => setFontSize(Number(e.target.value))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              aria-label="文字大小"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              文字粗细
+            </label>
+            <select
+              value={fontWeight}
+              onChange={(e) => setFontWeight(e.target.value as 'normal' | 'bold')}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              aria-label="文字粗细"
+            >
+              <option value="normal">正常</option>
+              <option value="bold">粗体</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              文字角度: {rotation}°
+            </label>
+            <input
+              type="range"
+              min="-180"
+              max="180"
+              value={rotation}
+              onChange={(e) => setRotation(Number(e.target.value))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              aria-label="文字角度"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              文字间距: {spacing}px
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={spacing}
+              onChange={(e) => setSpacing(Number(e.target.value))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              aria-label="文字间距"
+            />
+          </div>
         </div>
 
         {error && (
@@ -222,7 +294,7 @@ export function WatermarkTool({ onProcessed }: WatermarkToolProps) {
       {/* Result */}
       {resultUrl && (
         <div className="space-y-4">
-          <div className="border-2 border-dashed border-green-300 rounded-lg p-4 bg-green-50">
+          <div className="rounded-lg p-4 bg-green-50">
             <p className="text-sm text-green-700 text-center mb-3">水印添加完成!</p>
             <img src={resultUrl} alt="Result" className="max-h-48 mx-auto object-contain" />
           </div>

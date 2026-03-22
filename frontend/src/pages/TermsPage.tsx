@@ -37,7 +37,7 @@ export function TermsPage() {
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-3">一、服务条款概述</h2>
             <p className="text-gray-600 text-sm leading-relaxed">
-              欢迎使用 AI Screen Code（以下简称"本服务"）。本服务条款是您与本服务提供者之间的协议，
+              欢迎使用 AI Image（以下简称"本服务"）。本服务条款是您与本服务提供者之间的协议，
               规定了您使用本服务的权利和义务。在您开始使用本服务前，请仔细阅读并理解本服务条款。
             </p>
           </section>

@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Shield } from 'lucide-react'
-import { CompressTool, WatermarkTool, PortraitTool } from '@/components/tools'
+import { CompressTool, WatermarkTool } from '@/components/tools'
 import type { ToolType } from '@/types/image-tools'
 
 const tools: { id: ToolType; label: string }[] = [
   { id: 'compress', label: '图片压缩' },
   { id: 'watermark', label: '图片水印' },
-  { id: 'portrait', label: '生成证件照' },
+  // { id: 'portrait', label: '生成证件照' },
 ]
 
 export function ToolPanel() {
@@ -47,7 +47,7 @@ export function ToolPanel() {
         >
           {activeTab === 'compress' && <CompressTool />}
           {activeTab === 'watermark' && <WatermarkTool />}
-          {activeTab === 'portrait' && <PortraitTool />}
+          {/* activeTab === 'portrait' && <PortraitTool /> */}
         </div>
       </div>
     </section>

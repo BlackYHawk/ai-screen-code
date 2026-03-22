@@ -11,7 +11,7 @@ const FONT_DATA: &[u8] = include_bytes!("../fonts/Monaco.ttf");
 /// Add watermark to image - tiles watermark across entire image
 pub fn add_watermark(data: &[u8], config: &WatermarkConfig) -> Result<Vec<u8>, ImageError> {
     let img = io::load_image(data)?;
-    let (_, height) = io::get_dimensions(&img);
+    let _ = io::get_dimensions(&img);
 
     // Parse hex color to RGBA
     let color = parse_hex_color(&config.color)?;
@@ -99,15 +99,17 @@ fn draw_tiled_watermark(
 
     // Calculate number of tiles needed (with some overlap for rotation)
     let rotation_radians = rotation.to_radians();
-    let rotated_offset = if rotation != 0.0 {
+    let _rotated_offset = if rotation != 0.0 {
         ((text_width * rotation_radians.cos().abs())
             + (text_height * rotation_radians.sin().abs())) as u32
     } else {
         0
     };
 
-    let tiles_x = ((img_width as f32 / tile_width) as u32) + 3;
-    let tiles_y = ((img_height as f32 / tile_height) as u32) + 3;
+    // Add extra tiles to ensure full coverage with rotation
+    let extra_tiles = if rotation.abs() > 10.0 { 6 } else { 4 };
+    let tiles_x = ((img_width as f32 / tile_width) as u32) + extra_tiles;
+    let tiles_y = ((img_height as f32 / tile_height) as u32) + extra_tiles;
 
     // Draw tiled watermarks - start from -1 to ensure full coverage
     for tile_y in 0..tiles_y {

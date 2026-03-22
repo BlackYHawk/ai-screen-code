@@ -14,6 +14,7 @@ export function CompressTool({ onProcessed }: CompressToolProps) {
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [quality, setQuality] = useState(80)
+  const [format, setFormat] = useState<OutputFormat>('original')
   const [processing, setProcessing] = useState(false)
   const [resultUrl, setResultUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -21,6 +22,9 @@ export function CompressTool({ onProcessed }: CompressToolProps) {
   const validateFile = useCallback((file: File): string | null => {
     if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
       return '不支持的图片格式，请上传 PNG、JPG、JPEG 或 WebP 格式'
+    }
+    if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
+      return '不支持 SVG 格式'
     }
     if (file.size > MAX_FILE_SIZE) {
       return '图片大小不能超过 10MB'
@@ -80,8 +84,9 @@ export function CompressTool({ onProcessed }: CompressToolProps) {
 
       const level: CompressionLevel = quality > 75 ? 'light' : quality > 50 ? 'normal' : quality > 25 ? 'strong' : 'extreme'
 
-      const result = await compress(inputData, { level, format: 'original' as OutputFormat })
-      const mimeType = getMimeType('original' as OutputFormat)
+      const outputFormat = format === 'original' ? 'jpeg' : format
+      const result = await compress(inputData, { level, format: outputFormat })
+      const mimeType = getMimeType(outputFormat)
       const url = toDataUrl(result, mimeType)
 
       setResultUrl(url)
@@ -91,15 +96,17 @@ export function CompressTool({ onProcessed }: CompressToolProps) {
     } finally {
       setProcessing(false)
     }
-  }, [file, quality, onProcessed])
+  }, [file, quality, format, onProcessed])
 
   const handleDownload = useCallback(() => {
     if (!resultUrl) return
+    const ext = format === 'original' ? file?.name.split('.').pop() || 'jpg' : format === 'jpeg' ? 'jpg' : format
+    const baseName = file?.name.replace(/\.[^.]+$/, '') || 'image'
     const link = document.createElement('a')
     link.href = resultUrl
-    link.download = `compressed_${file?.name || 'image'}`
+    link.download = `compressed_${baseName}.${ext}`
     link.click()
-  }, [resultUrl, file])
+  }, [resultUrl, file, format])
 
   const handleRemove = useCallback(() => {
     setFile(null)
@@ -120,7 +127,7 @@ export function CompressTool({ onProcessed }: CompressToolProps) {
         <input
           id="compress-input"
           type="file"
-          accept=".png,.jpg,.jpeg,.webp"
+          accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
           onChange={handleInputChange}
           className="hidden"
         />
@@ -143,7 +150,7 @@ export function CompressTool({ onProcessed }: CompressToolProps) {
 
       {/* Preview */}
       {preview && (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+        <div className="rounded-lg p-4">
           <img src={preview} alt="Preview" className="max-h-48 mx-auto object-contain" />
         </div>
       )}
@@ -169,6 +176,23 @@ export function CompressTool({ onProcessed }: CompressToolProps) {
           </div>
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            输出格式
+          </label>
+          <select
+            value={format}
+            onChange={(e) => setFormat(e.target.value as OutputFormat)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            aria-label="输出格式"
+          >
+            <option value="original">保持原格式</option>
+            <option value="jpeg">JPG</option>
+            <option value="png">PNG</option>
+            <option value="webp">WebP</option>
+          </select>
+        </div>
+
         {error && (
           <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
         )}
@@ -192,7 +216,7 @@ export function CompressTool({ onProcessed }: CompressToolProps) {
       {/* Result */}
       {resultUrl && (
         <div className="space-y-4">
-          <div className="border-2 border-dashed border-green-300 rounded-lg p-4 bg-green-50">
+          <div className="rounded-lg p-4 bg-green-50">
             <p className="text-sm text-green-700 text-center mb-3">压缩完成!</p>
             <img src={resultUrl} alt="Result" className="max-h-48 mx-auto object-contain" />
           </div>

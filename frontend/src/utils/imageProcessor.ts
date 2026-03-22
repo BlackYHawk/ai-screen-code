@@ -1,5 +1,4 @@
 import type {
-  CompressionLevel,
   OutputFormat,
   CompressOptions,
   WatermarkOptions,
@@ -24,10 +23,6 @@ export async function initWasm(): Promise<void> {
     await wasm.default();
     wasmInitialized = true;
   }
-}
-
-function isWasmInitialized(): boolean {
-  return wasmInitialized;
 }
 
 /**
